@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .top{
+            text-align: center;
+            font-size: 3em;
+            color: #333; 
+            margin-bottom: 20px; 
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 80px; /* Provide space for the fixed navbar */
+            box-sizing: border-box; /* Ensure padding is included in the total height */
+        }
+        
+        .hero {
+            flex: 1; /* Pushes the about section to the bottom */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            background-color: #ffffff; 
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            text-align: center;
+            max-width: 600px; /* Limit container width */
+            width: 90%; /* Responsive width */
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .container:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Slightly enhanced shadow to match the lift */
+        }
+        
+        .container p {
+            font-size: 1.2em;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            display: inline-block; 
+            background-color: #007bff; /* Primary blue color */
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            transition: all 0.3s ease; 
+        }
+        
+        .btn:hover {
+            background-color: #cf00d6d6; 
+            transform: translateY(-5px) scale(1.05);
+        }
+        
+        /* About Section Styles */
+        .about-section {
+            background-color: #1f2937;
+            color: #ffffff;
+            padding: 80px 20px;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .about-section h2 {
+            font-size: 2.5em;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #3b82f6;
+        }
+        
+        .about-section p.lead {
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+            color: #d1d5db;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+        
+        .about-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .about-card {
+            background: #374151;
+            padding: 25px;
+            border-radius: 8px;
+            width: 280px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        
+        .about-card h3 {
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .about-card p {
+            color: #9ca3af;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        /* Wide Contact Layout */
+        .contact-layout {
+            max-width: 90%;
+            margin: 60px auto 0;
+            border-top: 1px solid #4b5563;
+            padding-top: 50px;
+            text-align: left;
+        }
+        
+        .contact-layout h3 {
+            color: #3b82f6;
+            font-size: 2em;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 40px;
+        }
+        
+        .contact-columns {
+            display: flex;
+            justify-content: center;
+            gap: 100px; 
+            flex-wrap: wrap;
+            margin-right: -50px;
+        }
+        
+        .contact-column {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .contact-column h4 {
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            font-size: 1.3em;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        
+        .contact-column h4::before,
+        .contact-column h4::after {
+            content: "";
+            flex-grow: 1;
+            height: 2px;
+            background-color: #3b82f6;
+        }
+        
+        .contact-column h4::before {
+            margin-right: 15px;
+        }
+        
+        .contact-column h4::after {
+            margin-left: 15px;
+        }
+        
+        .contact-info-row {
+            display: flex;
+            margin-bottom: 15px;
+            color: #d1d5db;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+        
+        .contact-info-row strong {
+            color: #ffffff;
+            min-width: 140px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="welcome-page">
+    {% include 'navbar.html' %}
+    <div class="hero">
+        <div class="container">
+            <h1 class="top">Welcome to Our Website</h1>
+            <p>We're thrilled to have you here. Explore our features and get started!</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn">Get Started</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn">Get Started</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <section id="about" class="about-section">
+        <h2>About Us</h2>
+        <p class="lead">Welcome to SHOP-X! We are a passionate team dedicated to providing the best online experience. Our mission is to deliver high-quality solutions with exceptional customer service. We believe in innovation, integrity, and putting our users first.</p>
+        
+        <div class="about-grid">
+            <div class="about-card">
+                <h3>Our Vision</h3>
+                <p>To be the world's most user-centric company, where customers can find and discover anything they might need, seamlessly and securely online.</p>
+            </div>
+            <div class="about-card">
+                <h3>Our Journey</h3>
+                <p>Founded in 2026, we started with a simple idea: make access to great products and features easier and more accessible for everyone, everywhere.</p>
+            </div>
+        </div>
+
+        <div class="contact-layout">
+            <h3>Contact Information</h3>
+            <div class="contact-columns">
+                <div class="contact-column">
+                    <h4>Company Details</h4>
+                    <div class="contact-info-row"><strong>Name:</strong> SHOP-X Inc.</div>
+                    <div class="contact-info-row"><strong>Email:</strong> contact@shop-x.com</div>
+                    <div class="contact-info-row"><strong>Contact No:</strong> +1 (555) 123-4567</div>
+                    <div class="contact-info-row"><strong>Address:</strong> 123 Commerce St, Tech City, Web State 90210</div>
+                    <div class="contact-info-row"><strong>Bank Details:</strong> TechBank, A/C: 9876543210, Routing: 123456789</div>
+                    <div class="contact-info-row"><strong>Other Services:</strong> Consulting, Web Development, Cloud Hosting</div>
+                </div>
+                <div class="contact-column">
+                    <h4>Support & Branches</h4>
+                    <div class="contact-info-row"><strong>Support Email:</strong> support@shop-x.com</div>
+                    <div class="contact-info-row"><strong>Post Email:</strong> postal@shop-x.com</div>
+                    <div class="contact-info-row"><strong>Branches:</strong> New York, London, Tokyo, Sydney</div>
+                    <div class="contact-info-row"><strong>Working Hours:</strong> Mon-Fri, 9:00 AM - 6:00 PM (EST)</div>
+                    <div class="contact-info-row"><strong>Customer Care:</strong> 1-800-SHOP-X-HELP</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

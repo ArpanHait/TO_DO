@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SHOP-X</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding-top: 80px; /* Space for fixed navbar */
+            box-sizing: border-box;
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .welcome-banner h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+        
+        .welcome-banner p {
+            margin: 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 5px solid #3b82f6;
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            color: #6b7280;
+            font-size: 1.1em;
+        }
+        
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #1f2937;
+            margin: 0;
+        }
+        
+        /* To-Do List Styles */
+        .todo-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-top: 10px;
+        }
+        
+        .todo-header {
+            font-size: 1.5em;
+            color: #1f2937;
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .todo-form {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .todo-input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .todo-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .todo-button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .todo-button:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+        
+        .todo-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 5px solid #3b82f6;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .todo-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            background-color: #ffffff;
+        }
+        
+        .todo-title {
+            font-size: 1.1rem;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .todo-delete {
+            background-color: #ef4444; /* Clean red color for delete */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        
+        .todo-delete:hover {
+            background-color: #dc2626;
+        }
+        
+        .todo-empty {
+            text-align: center;
+            color: #9ca3af;
+            font-style: italic;
+            padding: 30px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px dashed #d1d5db;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    
+    <div class="dashboard-container">
+        <div class="welcome-banner">
+            <h1>Welcome back, {{ user.username }}!</h1>
+            <p>Here's what's happening with your account today.</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Account Status</h3>
+                <p class="value" style="color: #10b981;">Active</p>
+            </div>
+        </div>
+        
+        <div class="todo-section">
+            <h2 class="todo-header">My To-Do List</h2>
+            <form class="todo-form" method="POST">
+                {% csrf_token %}
+                <input type="text" class="todo-input" name="title" placeholder="What needs to be done?" required>
+                <button type="submit" class="todo-button">Add Task</button>
+            </form>
+            
+            <ul class="todo-list">
+                {% for task in tasks %}
+                <li class="todo-item">
+                    <span class="todo-title">{{ task.title }}</span>
+                    <a href="/delete/{{ task.id }}/" style="text-decoration: none;">
+                        <button class="todo-delete">Delete</button>
+                    </a>
+                </li>
+                {% empty %}
+                <li class="todo-empty">No tasks yet. Enjoy your free time!</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

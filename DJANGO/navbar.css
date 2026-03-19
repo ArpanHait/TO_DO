@@ -1,0 +1,112 @@
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.navbar .brand a {
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.nav-links a {
+    color: #4b5563;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all  0.3s ease-in-out;
+
+}
+
+.nav-links a:hover {
+    color: #3b82f6; /* Keep the color change */
+    transform: translateY(-5px) scale(1.05); /* Moves up and scales up */
+}
+
+/* Profile Dropdown Styles */
+.profile-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-icon {
+    background: #f3f4f6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.profile-icon:hover {
+    background: #e5e7eb;
+}
+
+.profile-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: #4b5563;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 1;
+    flex-direction: column;
+}
+
+.dropdown-content.show {
+    display: flex;
+}
+
+.dropdown-content a {
+    color: #374151;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: background-color 0.2s;
+}
+
+.dropdown-content a:hover {
+    background-color: #f9fafb;
+    color: #3b82f6;
+}
+
+.user-greeting {
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+    margin: 0;
+    background-color: #f9fafb;
+    cursor: default;
+}
