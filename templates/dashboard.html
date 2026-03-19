@@ -156,6 +156,11 @@
             color: #374151;
             font-weight: 500;
         }
+
+        .completed-task {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
         
         .todo-delete {
             background-color: #ef4444; /* Clean red color for delete */
@@ -181,6 +186,27 @@
             background: #f9fafb;
             border-radius: 8px;
             border: 1px dashed #d1d5db;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .todo-complete {
+            background-color: #10b981; /* Green color for complete */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        
+        .todo-complete:hover {
+            background-color: #059669;
         }
     </style>
 </head>
@@ -211,10 +237,17 @@
             <ul class="todo-list">
                 {% for task in tasks %}
                 <li class="todo-item">
-                    <span class="todo-title">{{ task.title }}</span>
-                    <a href="/delete/{{ task.id }}/" style="text-decoration: none;">
-                        <button class="todo-delete">Delete</button>
-                    </a>
+                    <span class="todo-title {% if task.completed %}completed-task{% endif %}">
+                        {{ task.title }}
+                    </span>
+                    <div class="todo-actions">
+                        <a href="{% url 'complete_task' task.id %}" style="text-decoration: none;">
+                            <button class="todo-complete">{% if task.completed %}Undo{% else %}Complete{% endif %}</button>
+                        </a>
+                        <a href="{% url 'delete_task' task.id %}" style="text-decoration: none;">
+                            <button class="todo-delete">Delete</button>
+                        </a>
+                    </div>
                 </li>
                 {% empty %}
                 <li class="todo-empty">No tasks yet. Enjoy your free time!</li>

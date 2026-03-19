@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, authenticate, login as auth_login
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -56,3 +56,17 @@ def dashboard(request):
             
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'dashboard.html', {'tasks': tasks})
+
+
+@login_required(login_url='login')
+def delete_task(request, id):
+    task = get_object_or_404(Task, id=id, user=request.user)
+    task.delete()
+    return redirect('dashboard')
+
+@login_required(login_url='login')
+def complete_task(request, id):
+    task = get_object_or_404(Task, id=id, user=request.user)
+    task.completed = not task.completed
+    task.save()
+    return redirect('dashboard')
