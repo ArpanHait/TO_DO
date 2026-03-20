@@ -46,7 +46,7 @@
             transform: translateY(-5px) scale(1.03);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Slightly enhanced shadow to match the lift */
         }
-        
+
         .container p {
             font-size: 1.2em;
             color: #666;
@@ -200,6 +200,7 @@
     {% include 'navbar.html' %}
     <div class="hero">
         <div class="container">
+            <span style="font-size: 8rem; display: block; margin-bottom: 10px;">🎯</span>
             <h1 class="top">Welcome to Our Website</h1>
             <p>We're thrilled to have you here. Explore our features and get started!</p>
             {% if user.is_authenticated %}

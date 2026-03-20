@@ -10,3 +10,11 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+
+class Profile(models.Model):
+    # Using OneToOneField instead of ForeignKey ensures each user has exactly one profile
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
