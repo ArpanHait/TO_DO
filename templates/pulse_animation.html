@@ -50,7 +50,7 @@
         class Pulse {
             constructor(startPoint, endPoint, gridSize) {
                 this.gridSize = gridSize;
-                this.radius = 2.5; 
+                this.radius = 1.2; 
                 this.trailLength = 400; // Physical pixel length instead of framerate-dependent history array!
                 
                 this.path = this.generateManhattanPath(startPoint, endPoint, gridSize);
@@ -112,13 +112,19 @@
             }
 
             update(progress) {
+                // Safeguard against JS Date/Timeline desync causing < 0 progress
+                progress = Math.max(0, Math.min(1, progress));
+                
                 this.currentDistAlongPath = progress * this.totalDistance;
                 let targetDist = this.currentDistAlongPath;
-                let currentPos = this.path[this.path.length - 1]; 
+                
+                // Default to first point to prevent end-node teleportation if target is below array ranges
+                let currentPos = this.path[0]; 
                 
                 for(let i = 0; i < this.path.length-1; i++) {
                     if (targetDist >= this.pathDists[i] && targetDist <= this.pathDists[i+1]) {
-                        let segmentRatio = (targetDist - this.pathDists[i]) / (this.pathDists[i+1] - this.pathDists[i]);
+                        let segLen = this.pathDists[i+1] - this.pathDists[i];
+                        let segmentRatio = segLen === 0 ? 0 : (targetDist - this.pathDists[i]) / segLen;
                         currentPos = {
                             x: this.path[i].x + (this.path[i+1].x - this.path[i].x) * segmentRatio,
                             y: this.path[i].y + (this.path[i+1].y - this.path[i].y) * segmentRatio
@@ -127,8 +133,11 @@
                     }
                 }
                 
-                this.x = currentPos.x;
-                this.y = currentPos.y;
+                // Final safety clamp against NaN pollution
+                if (!isNaN(currentPos.x) && !isNaN(currentPos.y)) {
+                    this.x = currentPos.x;
+                    this.y = currentPos.y;
+                }
             }
             
             buildTrail() {
@@ -142,7 +151,8 @@
                     if (d >= this.totalDistance) return this.path[this.path.length-1];
                     for(let i = 0; i < this.path.length-1; i++) {
                         if (d >= this.pathDists[i] && d <= this.pathDists[i+1]) {
-                            let segmentRatio = (d - this.pathDists[i]) / (this.pathDists[i+1] - this.pathDists[i]);
+                            let segLen = this.pathDists[i+1] - this.pathDists[i];
+                            let segmentRatio = segLen === 0 ? 0 : (d - this.pathDists[i]) / segLen;
                             return {
                                 x: this.path[i].x + (this.path[i+1].x - this.path[i].x) * segmentRatio,
                                 y: this.path[i].y + (this.path[i+1].y - this.path[i].y) * segmentRatio
@@ -174,32 +184,39 @@
                     let tail = trail[0];
                     let head = trail[trail.length - 1];
                     
-                    let grad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
-                    grad.addColorStop(0, 'rgba(0, 50, 255, 0)');     
-                    grad.addColorStop(0.5, 'rgba(255, 0, 255, 0.7)');
-                    grad.addColorStop(1, 'rgba(0, 255, 255, 1)');    
-                    
-                    for(let i = 0; i < trail.length - 1; i++) {
-                        let p1 = trail[i];
-                        let p2 = trail[i+1];
+                    // Hardware glitch safeguard: Create gradients ONLY if points represent valid distances
+                    let distSq = (head.x - tail.x) ** 2 + (head.y - tail.y) ** 2;
+                    if (distSq > 0.01 && !isNaN(head.x) && !isNaN(head.y) && !isNaN(tail.x) && !isNaN(tail.y)) {
+                        let grad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+                        grad.addColorStop(0, 'rgba(0, 50, 255, 0)');     
+                        grad.addColorStop(0.5, 'rgba(255, 0, 255, 0.7)');
+                        grad.addColorStop(1, 'rgba(0, 255, 255, 1)');    
                         
-                        ctx.beginPath();
-                        ctx.moveTo(p1.x, p1.y);
-                        ctx.lineCap = 'round';
-                        ctx.lineJoin = 'round';
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = grad;
-                        ctx.lineWidth = 1 + (p1.opac * 2); 
-                        
-                        // Scale blur precisely over the last 30% of the trail
-                        if (p2.opac > 0.7) {
-                            let blurRatio = (p2.opac - 0.7) / 0.3;
-                            ctx.shadowBlur = 15 * blurRatio;
-                            ctx.shadowColor = '#00ffff';
-                        } else {
-                            ctx.shadowBlur = 0;
+                        for(let i = 0; i < trail.length - 1; i++) {
+                            let p1 = trail[i];
+                            let p2 = trail[i+1];
+                            
+                            // Extra protection against invisible coordinate bugs connecting weird artifacts
+                            if(isNaN(p1.x) || isNaN(p1.y) || isNaN(p2.x) || isNaN(p2.y)) continue;
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineCap = 'round';
+                            ctx.lineJoin = 'round';
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = grad;
+                            ctx.lineWidth = 0.5 + p1.opac; 
+                            
+                            // Scale blur precisely over the last 30% of the trail
+                            if (p2.opac > 0.7) {
+                                let blurRatio = (p2.opac - 0.7) / 0.3;
+                                ctx.shadowBlur = 8 * blurRatio;
+                                ctx.shadowColor = '#00ffff';
+                            } else {
+                                ctx.shadowBlur = 0;
+                            }
+                            ctx.stroke();
                         }
-                        ctx.stroke();
                     }
                 }
                 
@@ -211,7 +228,7 @@
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius * 1.5, 0, Math.PI * 2);
                 ctx.fillStyle = headGrad; 
-                ctx.shadowBlur = 20;
+                ctx.shadowBlur = 10;
                 ctx.shadowColor = '#ff00ff';
                 ctx.fill();
                 ctx.shadowBlur = 0; 
@@ -351,8 +368,10 @@
                 
                 if (wave.state === 'PULSING') {
                     let elapsed = currentTime - wave.startTime;
+                    if (elapsed < 0) elapsed = 0; // Negative time blocking 
+                    
                     // Framerate independent uniform speed interpolation
-                    let progress = elapsed / PULSE_DURATION; 
+                    let progress = Math.min(elapsed / PULSE_DURATION, 1.0);
                     
                     if (progress >= 1.0) {
                         wave.pulses = [];

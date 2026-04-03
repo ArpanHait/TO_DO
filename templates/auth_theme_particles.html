@@ -1,0 +1,289 @@
+<!-- Day/Night Mode & Connected Particles Module -->
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+
+<style>
+/* Global CSS Variables for Day/Night Theme */
+:root {
+    --bg-main: #0b0f19;
+    --grid-line: rgba(0, 255, 255, 0.08);
+    --glow-center: rgba(255, 0, 255, 0.15);
+    
+    --container-bg: rgba(20, 25, 40, 0.85);
+    --container-border: rgba(0, 255, 255, 0.2);
+    --container-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 255, 0.1);
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    
+    --input-bg: rgba(0, 0, 0, 0.3);
+    --input-border: rgba(255, 255, 255, 0.1);
+    
+    --accent: #00ffff;
+    --accent-glow: rgba(0, 255, 255, 0.3);
+    --btn-grad-start: #0ea5e9;
+    --btn-grad-end: #6366f1;
+}
+
+body.light-mode {
+    --bg-main: #f0f4f8;
+    --grid-line: rgba(0, 0, 0, 0.04);
+    --glow-center: rgba(0, 0, 255, 0.05);
+    
+    --container-bg: rgba(255, 255, 255, 0.85);
+    --container-border: rgba(0, 0, 0, 0.1);
+    --container-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.05);
+    
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    
+    --input-bg: rgba(255, 255, 255, 0.8);
+    --input-border: rgba(0, 0, 0, 0.2);
+    
+    --accent: #0284c7;
+    --accent-glow: rgba(2, 132, 199, 0.3);
+    --btn-grad-start: #3b82f6;
+    --btn-grad-end: #8b5cf6;
+}
+
+body {
+    background-color: var(--bg-main);
+    background-image: 
+        radial-gradient(circle at center, var(--glow-center), transparent 60%),
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 100% 100%, 30px 30px, 30px 30px;
+    background-position: center;
+    background-attachment: fixed;
+    color: var(--text-primary);
+    transition: background-color 0.4s ease, color 0.4s ease;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Base override for containers to inherit theme easily */
+.themed-container {
+    background: var(--container-bg) !important;
+    border: 1px solid var(--container-border) !important;
+    box-shadow: var(--container-shadow) !important;
+    color: var(--text-primary) !important;
+}
+.themed-container h2 { color: var(--text-primary) !important; }
+.themed-container p { color: var(--text-secondary) !important; }
+.themed-container input[type="text"], 
+.themed-container input[type="password"],
+.themed-container input[type="email"],
+.themed-container input[type="file"] {
+    background-color: var(--input-bg) !important;
+    border-color: var(--input-border) !important;
+    color: var(--text-primary) !important;
+}
+.themed-container input:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 8px var(--accent-glow) !important;
+}
+.themed-container input[type="submit"],
+.themed-container button[type="submit"] {
+    background: linear-gradient(135deg, var(--btn-grad-start), var(--btn-grad-end)) !important;
+}
+.themed-container a { color: var(--accent) !important; }
+
+/* Particles Canvas wrapper */
+#tsparticles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none; /* Mouse clicks pass through to standard body interactivity */
+}
+
+/* Floating Day/Night switch */
+.theme-switch-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+#theme-toggle-btn {
+    background: var(--container-bg);
+    border: 1px solid var(--container-border);
+    color: var(--text-primary);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: var(--container-shadow);
+    transition: all 0.3s ease;
+}
+#theme-toggle-btn:hover {
+    transform: scale(1.1);
+}
+</style>
+
+<div id="tsparticles"></div>
+<div class="theme-switch-wrapper">
+    <button id="theme-toggle-btn" title="Toggle Day/Night Mode">🌙</button>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const body = document.body;
+    const toggleBtn = document.getElementById('theme-toggle-btn');
+    
+    // Check local storage for preference
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    
+    const loadParticles = (theme) => {
+        let pColor = theme === 'light' ? "#3b82f6" : "#00ffff";
+        let lColor = theme === 'light' ? "#8b5cf6" : "#ff00ff";
+        
+        tsParticles.load("tsparticles", {
+            fpsLimit: 60,
+            particles: {
+                number: { value: 50, density: { enable: true, value_area: 800 } },
+                color: { value: pColor },
+                links: { enable: true, color: lColor, distance: 150, opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 1.5, direction: "none", random: false, straight: false, outModes: "out" },
+                size: { value: { min: 1, max: 3 } },
+                opacity: { value: 0.5 }
+            },
+            interactivity: {
+                // To let tsparticles receive mouse coords when pointer-events: none is on the wrapper,
+                // tsparticles automatically hooks window events.
+                events: {
+                    onHover: { enable: true, mode: "grab" },
+                    onClick: { enable: true, mode: "push" }
+                },
+                modes: {
+                    grab: { distance: 180, links: { opacity: 0.8 } },
+                    push: { quantity: 4 }
+                }
+            }
+        });
+    };
+
+    const applyTheme = (theme) => {
+        if (theme === 'light') {
+            body.classList.add('light-mode');
+            toggleBtn.textContent = '☀️';
+        } else {
+            body.classList.remove('light-mode');
+            toggleBtn.textContent = '🌙';
+        }
+        localStorage.setItem('theme', theme);
+        loadParticles(theme);
+    };
+
+    // Initialize
+    applyTheme(savedTheme);
+
+    // Toggle logic
+    toggleBtn.addEventListener('click', () => {
+        const current = body.classList.contains('light-mode') ? 'light' : 'dark';
+        applyTheme(current === 'light' ? 'dark' : 'light');
+    });
+
+    // --- Interactive Node Limiting & Decay Engine ---
+    let clickTimes = [];
+    const BASE_PARTICLES = 50;
+
+    window.addEventListener('click', (e) => {
+        // Find the active particles instance safely
+        const container = window.tsParticles ? window.tsParticles.domItem(0) : null;
+        if (!container) return;
+        
+        let now = Date.now();
+        // Clear memory of clicks older than 1 second
+        clickTimes = clickTimes.filter(t => now - t < 1000);
+        
+        // Ensure clicking the theme toggle doesn't trigger ghost logic
+        if(e.target.closest('#theme-toggle-btn')) return;
+
+        // "in 1 second the user can click only 3 times"
+        if (clickTimes.length >= 3) {
+            // RATE LIMIT REACHED: tsParticles natively renders the 4 nodes, 
+            // so we counteract it in a nearly instantaneous microtask 
+            // to physically prevent Canvas array inflation and crashing!
+            setTimeout(() => {
+                if(container.particles && container.particles.count > BASE_PARTICLES) {
+                    container.particles.removeQuantity(4);
+                }
+            }, 10);
+        } else {
+            // Valid Click
+            clickTimes.push(now);
+            
+            // "Notes will disappeared after few seconds"
+            // Schedule the explicit removal of this click's network geometry 
+            setTimeout(() => {
+                if(container.particles && container.particles.count > BASE_PARTICLES) {
+                    container.particles.removeQuantity(4);
+                }
+            }, 3500);
+        }
+    }, true); // Capture phase ensures we always track raw clicks first
+    
+    // --- Smooth Page Transitions (Matches Navbar) ---
+    const links = document.querySelectorAll('a');
+    
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            const isSamePage = this.pathname === window.location.pathname;
+            const isHashOnly = isSamePage && this.hash;
+            
+            if (this.hostname === window.location.hostname && 
+                !isHashOnly && 
+                this.getAttribute('target') !== '_blank' &&
+                !this.hasAttribute('download') &&
+                !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                
+                e.preventDefault();
+                const targetUrl = this.href;
+                
+                document.body.style.animation = "fadeOut 0.35s ease-out forwards";
+                
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 300);
+            }
+        });
+    });
+
+    // Form Submissions (Login, Register, Upload)
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (this.getAttribute('target') !== '_blank') {
+                e.preventDefault();
+                document.body.style.animation = "fadeOut 0.35s ease-out forwards";
+                setTimeout(() => {
+                    this.submit();
+                }, 300);
+            }
+        });
+    });
+
+    // Fix for browser back button (bfcache)
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            document.body.style.animation = "none";
+            void document.body.offsetWidth; // Trigger reflow
+            document.body.style.animation = "fadeIn 0.4s ease-out forwards";
+        }
+    });
+
+});
+</script>

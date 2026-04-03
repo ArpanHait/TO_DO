@@ -4,6 +4,10 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Task, Profile
+import json
+from django.utils import timezone
+from django.db.models import Count
+from django.db.models.functions import TruncDate
 
 def register(request):
     if request.method=="POST":
@@ -55,23 +59,58 @@ def logout_view(request):
 def dashboard(request):
     if request.method == "POST":
         title = request.POST.get('title')
+        priority = request.POST.get('priority', 'Low')
         if title:
-            Task.objects.create(user=request.user, title=title)
+            Task.objects.create(user=request.user, title=title, priority=priority)
             
-    tasks = Task.objects.filter(user=request.user)
-    return render(request, 'dashboard.html', {'tasks': tasks})
+    # Sort tasks: Pending tasks first (False -> 0), then Completed (True -> 1), then mostly recent
+    tasks = Task.objects.filter(user=request.user, is_deleted=False).order_by('completed', '-created_at')
+    
+    # Aggregating task completions by day to render the Github-style Heatmap Calendar
+    # NOTE: This intentionally does NOT filter out 'is_deleted', natively preserving historical Heatmap data forever!
+    completed_counts = (
+        Task.objects.filter(user=request.user, completed=True, completed_at__isnull=False)
+        .annotate(date=TruncDate('completed_at'))
+        .values('date')
+        .annotate(count=Count('id'))
+    )
+    
+    # Build dictionary {"YYYY-MM-DD": count} safely
+    heatmap_data = {
+        obj['date'].strftime('%Y-%m-%d'): obj['count'] 
+        for obj in completed_counts if obj['date']
+    }
+    
+    heatmap_json = json.dumps(heatmap_data)
+    
+    # Account stats
+    total_completed = Task.objects.filter(user=request.user, completed=True).count() # Lifetime
+    total_pending = Task.objects.filter(user=request.user, completed=False, is_deleted=False).count()
+
+    return render(request, 'dashboard.html', {
+        'tasks': tasks,
+        'heatmap_json': heatmap_json,
+        'total_completed': total_completed,
+        'total_pending': total_pending
+    })
 
 
 @login_required(login_url='login')
 def delete_task(request, id):
     task = get_object_or_404(Task, id=id, user=request.user)
-    task.delete()
+    task.is_deleted = True
+    task.save()
     return redirect('dashboard')
 
 @login_required(login_url='login')
 def complete_task(request, id):
     task = get_object_or_404(Task, id=id, user=request.user)
-    task.completed = not task.completed
+    if not task.completed:
+        task.completed = True
+        task.completed_at = timezone.now()
+    else:
+        task.completed = False
+        task.completed_at = None
     task.save()
     return redirect('dashboard')
 

@@ -22,15 +22,7 @@
             background-position: center;
             position: relative;
         }
-        /* Soft global radial glow behind the grid */
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at center, rgba(255, 0, 255, 0.15), transparent 60%);
-            pointer-events: none;
-            z-index: -1;
-        }
+        /* Removed to let auth_theme handle dynamic backgrounds */
 
         .login-container {
             background-color: rgba(20, 25, 40, 0.85);
@@ -132,7 +124,8 @@
     </style>
 </head>
 <body>
-    <div class="login-container">
+    {% include 'auth_theme_particles.html' %}
+    <div class="login-container themed-container">
         <h2>Welcome Back</h2>
         {% if messages %}
             {% for message in messages %}

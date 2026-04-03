@@ -213,10 +213,150 @@
         .todo-complete:hover {
             background-color: #059669;
         }
+
+        /* Priority Styling */
+        .todo-priority {
+            padding: 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .priority-badge {
+            font-size: 0.65em;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-right: 12px;
+            font-weight: 800;
+            color: white;
+            display: inline-block;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .priority-high .priority-badge { background-color: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+        .priority-medium .priority-badge { background-color: #f59e0b; }
+        .priority-low .priority-badge { background-color: #3b82f6; }
+        
+        .todo-item.priority-high { border-left-color: #ef4444; }
+        .todo-item.priority-medium { border-left-color: #f59e0b; }
+        .todo-item.priority-low { border-left-color: #3b82f6; }
+        
+        /* Heatmap Styling - Cyberpunk Aesthetics */
+        .heatmap-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .heatmap-scroll-wrapper {
+            overflow-x: auto;
+            padding-bottom: 15px;
+        }
+        /* Custom scrollbar for heatmap */
+        .heatmap-scroll-wrapper::-webkit-scrollbar { height: 8px; }
+        .heatmap-scroll-wrapper::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .heatmap-scroll-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .heatmap-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .heatmap-title {
+            margin-top: 0;
+            color: #1f2937;
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 15px;
+        }
+        .heatmap-grid {
+            display: flex;
+            gap: 4px;
+        }
+        .heatmap-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .heat-box {
+            width: 15px;
+            height: 15px;
+            border-radius: 4px;
+            background-color: #ebedf0;
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .heat-box:hover:not(.empty) {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+        .heat-box.empty { background-color: transparent; }
+        
+        /* Deep Blue to Magenta neon progression */
+        .heat-box.level-0 { background-color: #ebedf0; }
+        .heat-box.level-1 { background-color: #93c5fd; }
+        .heat-box.level-2 { background-color: #3b82f6; }
+        .heat-box.level-3 { background-color: #cf00d6; }
+        .heat-box.level-4 { background-color: #ff00ff; box-shadow: 0 0 10px rgba(255, 0, 255, 0.7); }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #6b7280;
+            justify-content: flex-end;
+            font-weight: bold;
+        }
+
+        /* Responsive Dark Mode Support */
+        body:not(.light-mode) .heatmap-container,
+        body:not(.light-mode) .stat-card,
+        body:not(.light-mode) .todo-section,
+        body:not(.light-mode) .todo-item {
+            background-color: #1e293b;
+            color: #f8fafc;
+        }
+        body:not(.light-mode) .todo-title,
+        body:not(.light-mode) .todo-header,
+        body:not(.light-mode) .heatmap-title,
+        body:not(.light-mode) .stat-card h3,
+        body:not(.light-mode) .stat-card .value {
+            color: #f8fafc;
+        }
+        body:not(.light-mode) .heatmap-title,
+        body:not(.light-mode) .todo-header {
+            border-color: #334155;
+        }
+        body:not(.light-mode) .heat-box.level-0 { background-color: #334155; }
+        body:not(.light-mode) .heat-box.level-1 { background-color: #0284c7; }
+        body:not(.light-mode) .heat-box.level-2 { background-color: #3b82f6; }
+        body:not(.light-mode) .heat-box.level-3 { background-color: #cf00d6; }
+        body:not(.light-mode) .heat-box.level-4 { background-color: #ff00ff; box-shadow: 0 0 12px rgba(255, 0, 255, 0.9); }
+        
+        body:not(.light-mode) .heatmap-scroll-wrapper::-webkit-scrollbar-track { background: #0f172a; }
+        body:not(.light-mode) .heatmap-scroll-wrapper::-webkit-scrollbar-thumb { background: #475569; }
+        body:not(.light-mode) .todo-input,
+        body:not(.light-mode) .todo-priority {
+            background-color: #0f172a;
+            border-color: #334155;
+            color: #f8fafc;
+        }
     </style>
 </head>
 <body>
     {% include 'navbar.html' %}
+    
+    <script id="heatmap-json-data" type="application/json">
+        {{ heatmap_json|safe }}
+    </script>
     
     <div class="dashboard-container">
         <div class="welcome-banner">
@@ -229,6 +369,30 @@
                 <h3>Account Status</h3>
                 <p class="value" style="color: #10b981;">Active</p>
             </div>
+            <div class="stat-card">
+                <h3>Completed Tasks</h3>
+                <p class="value" style="color: #cf00d6;">{{ total_completed }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Pending Tasks</h3>
+                <p class="value" style="color: #3b82f6;">{{ total_pending }}</p>
+            </div>
+        </div>
+        
+        <div class="heatmap-container">
+            <h3 class="heatmap-title">🎯 Cyberpunk Contribution Heatmap</h3>
+            <div class="heatmap-scroll-wrapper">
+                <div id="heatmap" class="heatmap-grid"></div>
+            </div>
+            <div class="heatmap-legend">
+                <span>Less</span>
+                <div class="heat-box level-0"></div>
+                <div class="heat-box level-1"></div>
+                <div class="heat-box level-2"></div>
+                <div class="heat-box level-3"></div>
+                <div class="heat-box level-4"></div>
+                <span>More</span>
+            </div>
         </div>
         
         <div class="todo-section">
@@ -236,22 +400,24 @@
             <form class="todo-form" method="POST">
                 {% csrf_token %}
                 <input type="text" class="todo-input" name="title" placeholder="What needs to be done?" required>
+                <select name="priority" class="todo-priority" title="Task Priority" aria-label="Task Priority">
+                    <option value="High">🔴 High Priority</option>
+                    <option value="Medium">🟠 Medium</option>
+                    <option value="Low" selected>🔵 Routine</option>
+                </select>
                 <button type="submit" class="todo-button">Add Task</button>
             </form>
             
             <ul class="todo-list">
                 {% for task in tasks %}
-                <li class="todo-item">
+                <li class="todo-item priority-{{ task.priority|lower }}">
                     <span class="todo-title {% if task.completed %}completed-task{% endif %}">
+                        <span class="priority-badge">{{ task.priority }}</span>
                         {{ task.title }}
                     </span>
                     <div class="todo-actions">
-                        <a href="{% url 'complete_task' task.id %}" style="text-decoration: none;">
-                            <button class="todo-complete">{% if task.completed %}Undo{% else %}Complete{% endif %}</button>
-                        </a>
-                        <a href="{% url 'delete_task' task.id %}" style="text-decoration: none;">
-                            <button class="todo-delete">Delete</button>
-                        </a>
+                        <button class="todo-complete ajax-btn" data-url="{% url 'complete_task' task.id %}">{% if task.completed %}Undo{% else %}Complete{% endif %}</button>
+                        <button class="todo-delete ajax-btn" data-url="{% url 'delete_task' task.id %}">Delete</button>
                     </div>
                 </li>
                 {% empty %}
@@ -262,5 +428,141 @@
     </div>
 
     {% include 'pulse_animation.html' %}
+    
+    <script>
+        function parseAndRenderHeatmap(rawHeatmap) {
+            const heatmapEl = document.getElementById('heatmap');
+            if(!heatmapEl) return;
+            
+            // Build the grid
+            const weeks = 53; 
+            
+            let today = new Date();
+            today.setHours(0,0,0,0);
+            let current = new Date(today);
+            current.setDate(today.getDate() - (weeks * 7) + 1);
+
+            let html = '';
+            let monthsHtml = '<div style="position: relative; height: 20px; margin-top: 5px; min-width: ' + (weeks * 19) + 'px;">';
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            let lastMonth = current.getMonth();
+
+            for(let w = 0; w < weeks; w++) {
+                html += '<div class="heatmap-col">';
+                
+                let colMonth = current.getMonth();
+                if (colMonth !== lastMonth) {
+                    let leftOffset = w * 19;
+                    monthsHtml += `<span style="position: absolute; left: ${leftOffset}px; font-size: 0.8rem; color: #6b7280; font-weight: bold;">${monthNames[colMonth]}</span>`;
+                    lastMonth = colMonth;
+                }
+
+                for(let d = 0; d < 7; d++) {
+                    let dateStr = current.getFullYear() + '-' + String(current.getMonth()+1).padStart(2, '0') + '-' + String(current.getDate()).padStart(2, '0');
+                    let count = rawHeatmap[dateStr] || 0;
+                    
+                    let level = 0;
+                    if(count > 0) level = 1;
+                    if(count >= 2) level = 2;
+                    if(count >= 4) level = 3;
+                    if(count >= 6) level = 4;
+                    
+                    let tooltip = count === 0 ? `No tasks on ${dateStr}` : `${count} tasks completed on ${dateStr}`;
+                    
+                    if(current > today) {
+                        html += `<div class="heat-box empty"></div>`;
+                    } else {
+                        html += `<div class="heat-box level-${level}" title="${tooltip}"></div>`;
+                    }
+                    current.setDate(current.getDate() + 1);
+                }
+                html += '</div>';
+            }
+            monthsHtml += '</div>';
+            heatmapEl.innerHTML = html;
+            
+            // Clean up any old injected month html rows before appending a new one
+            const oldRow = heatmapEl.nextElementSibling;
+            if (oldRow && oldRow.style.position === 'relative') { oldRow.remove(); }
+            heatmapEl.insertAdjacentHTML('afterend', monthsHtml);
+            
+            const wrapper = document.querySelector('.heatmap-scroll-wrapper');
+            if(wrapper) wrapper.scrollLeft = wrapper.scrollWidth;
+        }
+
+        function attachSmoothActions() {
+            // Form Add
+            const form = document.querySelector('.todo-form');
+            if (form && !form.hasAttribute('data-ajax-bound')) {
+                form.setAttribute('data-ajax-bound', 'true');
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    await executeSmoothUpdate(window.location.href, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {'X-CSRFToken': formData.get('csrfmiddlewaretoken')}
+                    });
+                    this.reset();
+                });
+            }
+            // Complete & Delete Buttons
+            document.querySelectorAll('.ajax-btn').forEach(btn => {
+                if (!btn.hasAttribute('data-ajax-bound')) {
+                    btn.setAttribute('data-ajax-bound', 'true');
+                    btn.addEventListener('click', async function() {
+                        const url = this.getAttribute('data-url');
+                        await executeSmoothUpdate(url, { method: 'GET' });
+                    });
+                }
+            });
+        }
+
+        async function executeSmoothUpdate(url, options) {
+            const dash = document.querySelector('.dashboard-container');
+            // Animate out dynamically
+            dash.style.transition = 'filter 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, transform 0.4s ease';
+            dash.style.filter = 'blur(4px)';
+            dash.style.opacity = '0.5';
+            dash.style.transform = 'scale(0.98)';
+
+            try {
+                let res = await fetch(url, options);
+                let html = await res.text();
+                let doc = new DOMParser().parseFromString(html, "text/html");
+                
+                // Diff the DOM blocks directly
+                const elementsToSwap = ['.stats-grid', '.todo-list'];
+                elementsToSwap.forEach(selector => {
+                    const newEl = doc.querySelector(selector);
+                    if (newEl) document.querySelector(selector).innerHTML = newEl.innerHTML;
+                });
+                
+                // Hot swap the heatmap payload internally
+                let hiddenJson = doc.getElementById('heatmap-json-data');
+                if (hiddenJson) {
+                    parseAndRenderHeatmap(JSON.parse(hiddenJson.textContent || "{}"));
+                }
+                
+                // Wire up actions to the new DOM nodes
+                attachSmoothActions();
+            } catch(e) { console.error('SPA Update Error:', e); }
+
+            // Pull back into focus
+            setTimeout(() => {
+                dash.style.filter = 'blur(0px)';
+                dash.style.opacity = '1';
+                dash.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialJson = document.getElementById('heatmap-json-data');
+            if (initialJson) {
+                parseAndRenderHeatmap(JSON.parse(initialJson.textContent || "{}"));
+            }
+            attachSmoothActions();
+        });
+    </script>
 </body>
 </html>
