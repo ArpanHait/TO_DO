@@ -9,12 +9,16 @@
             text-align: center;
             font-size: 3em;
             color: #333; 
-            margin-bottom: 20px; 
+            margin-bottom: 20px;
         }
         
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(135deg, #0f172a, #1e1b4b);
+            background-size: 40px 40px, 40px 40px, 100% 100%;
             background-attachment: fixed;
             margin: 0;
             display: flex;
@@ -56,14 +60,14 @@
         }
         
         .btn {
-            display: inline-block; 
+            display: inline-block;
             background-color: #007bff; /* Primary blue color */
             color: white;
             padding: 12px 25px;
             text-decoration: none;
             border-radius: 5px;
             font-size: 1.1em;
-            transition: all 0.3s ease; 
+            transition: all 0.3s ease;
         }
         
         .btn:hover {
@@ -119,11 +123,11 @@
         
         /* About Section Styles */
         .about-section {
-            background: rgba(255, 255, 255, 0.1); /* Less transparent glass */
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.39); /* Stronger glass edge reflection */
-            box-shadow: 0 -8px 32px 0 rgba(0, 0, 0, 0.2); /* Soft upward diffuse shadow */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 -10px 40px 0 rgba(0, 0, 0, 0.3);
             position: relative;
             z-index: 10; /* Ensures it sits above the canvas animation */
             color: #ffffff;
@@ -157,17 +161,26 @@
         }
         
         .about-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 25px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 30px;
+            border-radius: 16px;
             width: 280px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15); /* Soft downward diffuse shadow */
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             position: relative;
             z-index: 11;
             text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .about-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.25);
         }
         
         .about-card h3 {
@@ -310,5 +323,7 @@
             </div>
         </div>
     </section>
+    
+    {% include 'pulse_animation.html' %}
 </body>
 </html>

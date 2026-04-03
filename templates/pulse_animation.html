@@ -1,0 +1,390 @@
+    <!-- ==========================================
+         ELECTRIC PULSE CANVAS OVERLAY
+    =========================================== -->
+    <canvas id="electricPulseCanvas"></canvas>
+
+    <style>
+    /* Overlay securely over the entire viewport without impacting user clicks */
+    #electricPulseCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none; /* Crucial: lets physical mouse clicks hit your UI underneath */
+        z-index: -1;          /* Layers completely behind UI containers but above the core background */
+        background: transparent;
+    }
+    </style>
+
+    <script>
+    /**
+     * Electric Pulse Animation System (Interactive / Cyberpunk Edition)
+     * Ultra-smooth grid snapping, strict mathematical lerping, radial gradients.
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.getElementById('electricPulseCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Configuration Variables
+        const GRID_SIZE = 25;              
+        const PULSE_DURATION = 3500;       
+        
+        let width, height;
+        let activeWaves = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        
+        /** Ensures coordinates snap precisely to mathematical grid centers */
+        function snapToGrid(value, gridSize) {
+            return Math.round(value / gridSize) * gridSize;
+        }
+
+        // ==========================================
+        // CLASS: PULSE 
+        // ==========================================
+        class Pulse {
+            constructor(startPoint, endPoint, gridSize) {
+                this.gridSize = gridSize;
+                this.radius = 2.5; 
+                this.trailLength = 400; // Physical pixel length instead of framerate-dependent history array!
+                
+                this.path = this.generateManhattanPath(startPoint, endPoint, gridSize);
+                
+                // Pre-calculate exact distance milestones for perfect physical math rendering
+                this.pathDists = [0];
+                let accum = 0;
+                for(let i=0; i<this.path.length-1; i++) {
+                    accum += Math.abs(this.path[i+1].x - this.path[i].x) + Math.abs(this.path[i+1].y - this.path[i].y);
+                    this.pathDists.push(accum);
+                }
+                this.totalDistance = accum;
+                
+                this.x = startPoint.x;
+                this.y = startPoint.y;
+                
+                // Track where we exactly are on the timeline
+                this.currentDistAlongPath = 0; 
+            }
+
+            generateManhattanPath(start, end, gridSize) {
+                let path = [{x: start.x, y: start.y}];
+                let currentX = start.x;
+                let currentY = start.y;
+                let iter = 0;
+                let lastMoveWasX = Math.random() > 0.5;
+                
+                while((Math.round(currentX) !== Math.round(end.x) || Math.round(currentY) !== Math.round(end.y)) && iter < 1000) {
+                    let dx = end.x - currentX;
+                    let dy = end.y - currentY;
+                    let moveOnX = false;
+                    
+                    if (Math.abs(dx) < 1) moveOnX = false;      
+                    else if (Math.abs(dy) < 1) moveOnX = true;  
+                    else {
+                        if (Math.random() > 0.25) moveOnX = !lastMoveWasX;
+                        else moveOnX = Math.random() > 0.5; 
+                    }
+                    
+                    lastMoveWasX = moveOnX;
+                    
+                    if (moveOnX) {
+                        let maxGridSteps = Math.ceil(Math.abs(dx) / gridSize);
+                        let steps = Math.floor(Math.random() * Math.min(maxGridSteps, 3)) + 1;
+                        let stepDist = steps * gridSize * Math.sign(dx);
+                        if (Math.abs(stepDist) > Math.abs(dx)) stepDist = dx;
+                        currentX += stepDist;
+                    } else {
+                        let maxGridSteps = Math.ceil(Math.abs(dy) / gridSize);
+                        let steps = Math.floor(Math.random() * Math.min(maxGridSteps, 3)) + 1;
+                        let stepDist = steps * gridSize * Math.sign(dy);
+                        if (Math.abs(stepDist) > Math.abs(dy)) stepDist = dy;
+                        currentY += stepDist;
+                    }
+                    path.push({x: currentX, y: currentY});
+                    iter++;
+                }
+                return path;
+            }
+
+            update(progress) {
+                this.currentDistAlongPath = progress * this.totalDistance;
+                let targetDist = this.currentDistAlongPath;
+                let currentPos = this.path[this.path.length - 1]; 
+                
+                for(let i = 0; i < this.path.length-1; i++) {
+                    if (targetDist >= this.pathDists[i] && targetDist <= this.pathDists[i+1]) {
+                        let segmentRatio = (targetDist - this.pathDists[i]) / (this.pathDists[i+1] - this.pathDists[i]);
+                        currentPos = {
+                            x: this.path[i].x + (this.path[i+1].x - this.path[i].x) * segmentRatio,
+                            y: this.path[i].y + (this.path[i+1].y - this.path[i].y) * segmentRatio
+                        };
+                        break;
+                    }
+                }
+                
+                this.x = currentPos.x;
+                this.y = currentPos.y;
+            }
+            
+            buildTrail() {
+                let points = [];
+                let headDist = this.currentDistAlongPath;
+                let tailDist = Math.max(0, headDist - this.trailLength);
+                if (headDist === 0) return points; 
+
+                const getPointAtDist = (d) => {
+                    if (d <= 0) return this.path[0];
+                    if (d >= this.totalDistance) return this.path[this.path.length-1];
+                    for(let i = 0; i < this.path.length-1; i++) {
+                        if (d >= this.pathDists[i] && d <= this.pathDists[i+1]) {
+                            let segmentRatio = (d - this.pathDists[i]) / (this.pathDists[i+1] - this.pathDists[i]);
+                            return {
+                                x: this.path[i].x + (this.path[i+1].x - this.path[i].x) * segmentRatio,
+                                y: this.path[i].y + (this.path[i+1].y - this.path[i].y) * segmentRatio
+                            };
+                        }
+                    }
+                    return this.path[this.path.length-1];
+                };
+
+                let tailPos = getPointAtDist(tailDist);
+                points.push({x: tailPos.x, y: tailPos.y, opac: 0});
+                
+                for(let i=0; i<this.path.length; i++) {
+                    let d = this.pathDists[i];
+                    if (d > tailDist && d < headDist) {
+                        let opac = (d - tailDist) / (headDist - tailDist);
+                        points.push({x: this.path[i].x, y: this.path[i].y, opac: opac});
+                    }
+                }
+                
+                points.push({x: this.x, y: this.y, opac: 1});
+                return points;
+            }
+
+            draw(ctx) {
+                let trail = this.buildTrail();
+                
+                if (trail.length > 1) {
+                    let tail = trail[0];
+                    let head = trail[trail.length - 1];
+                    
+                    let grad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+                    grad.addColorStop(0, 'rgba(0, 50, 255, 0)');     
+                    grad.addColorStop(0.5, 'rgba(255, 0, 255, 0.7)');
+                    grad.addColorStop(1, 'rgba(0, 255, 255, 1)');    
+                    
+                    for(let i = 0; i < trail.length - 1; i++) {
+                        let p1 = trail[i];
+                        let p2 = trail[i+1];
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = grad;
+                        ctx.lineWidth = 1 + (p1.opac * 2); 
+                        
+                        // Scale blur precisely over the last 30% of the trail
+                        if (p2.opac > 0.7) {
+                            let blurRatio = (p2.opac - 0.7) / 0.3;
+                            ctx.shadowBlur = 15 * blurRatio;
+                            ctx.shadowColor = '#00ffff';
+                        } else {
+                            ctx.shadowBlur = 0;
+                        }
+                        ctx.stroke();
+                    }
+                }
+                
+                let headGrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius * 3);
+                headGrad.addColorStop(0, '#ffffff'); 
+                headGrad.addColorStop(0.4, '#00ffff'); 
+                headGrad.addColorStop(1, 'rgba(255, 0, 255, 0)'); 
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius * 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = headGrad; 
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#ff00ff';
+                ctx.fill();
+                ctx.shadowBlur = 0; 
+            }
+        }
+
+        // ==========================================
+        // CLASS: SHOCKWAVE 
+        // ==========================================
+        class Shockwave {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 0;
+                this.maxRadius = Math.max(window.innerWidth, window.innerHeight) * 0.4;
+                this.opacity = 1.0;
+                this.speed = 10; 
+            }
+
+            update(dt) {
+                // Ensure physical expansion speed accurately scales with delta time
+                // 1000ms / 120fps = 8.333ms per frame
+                let fps120Ratio = dt / 8.333;
+                this.radius += (this.speed / 2) * fps120Ratio;
+                this.speed *= Math.pow(0.9899, fps120Ratio); 
+                
+                // Decoupling opacity drops from physical radius prevents it freezing when speed hits 0
+                this.opacity -= 0.0075 * fps120Ratio; 
+                if (this.opacity < 0) this.opacity = 0;
+            }
+
+            draw(ctx) {
+                if (this.opacity <= 0) return;
+                
+                // Cyberpunk Radial Ring explosion
+                let shockGrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                shockGrad.addColorStop(0.5, 'rgba(255, 0, 255, 0)'); // Transparent core
+                shockGrad.addColorStop(0.8, `rgba(255, 0, 255, ${this.opacity * 0.5})`); // Magenta inside edge
+                shockGrad.addColorStop(1, `rgba(0, 255, 255, ${this.opacity})`); // Cyan outer leading edge
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = shockGrad;
+                ctx.lineWidth = 8 * this.opacity;
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = `rgba(0, 255, 255, ${this.opacity})`;
+                ctx.stroke();
+                
+                // After-shock inner ring
+                if (this.radius > 30) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius - 20, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(255, 0, 255, ${this.opacity * 0.7})`;
+                    ctx.lineWidth = 2 * this.opacity;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#ff00ff';
+                    ctx.stroke();
+                }
+                ctx.shadowBlur = 0;
+            }
+
+            isDead() { return this.opacity <= 0; }
+        }
+
+        // ==========================================
+        // MULTI-WAVE CONTROLLER
+        // ==========================================
+        class WaveTracker {
+            constructor(targetX, targetY) {
+                // Snap the click target perfectly to the nearest exact grid intersection
+                let snappedTargetX = snapToGrid(targetX, GRID_SIZE);
+                let snappedTargetY = snapToGrid(targetY, GRID_SIZE);
+                this.target = { x: snappedTargetX, y: snappedTargetY };
+                
+                this.startTime = performance.now();
+                this.pulses = [];
+                this.shockwaves = [];
+                this.state = 'PULSING'; 
+                
+                const pulsesPerEdge = 4;
+                
+                for (let i = 0; i < pulsesPerEdge; i++) {
+                    let startTopX = snapToGrid(Math.random() * width, GRID_SIZE);
+                    this.pulses.push(new Pulse({x: startTopX, y: 0}, this.target, GRID_SIZE));
+                    
+                    let startBotX = snapToGrid(Math.random() * width, GRID_SIZE);
+                    let snappedHeight = snapToGrid(height, GRID_SIZE);
+                    this.pulses.push(new Pulse({x: startBotX, y: snappedHeight}, this.target, GRID_SIZE));
+                }
+                for (let i = 0; i < pulsesPerEdge; i++) {
+                    let startLeftY = snapToGrid(Math.random() * height, GRID_SIZE);
+                    this.pulses.push(new Pulse({x: 0, y: startLeftY}, this.target, GRID_SIZE));
+                    
+                    let startRightY = snapToGrid(Math.random() * height, GRID_SIZE);
+                    let snappedWidth = snapToGrid(width, GRID_SIZE);
+                    this.pulses.push(new Pulse({x: snappedWidth, y: startRightY}, this.target, GRID_SIZE));
+                }
+            }
+        }
+
+        let clickTimes = [];
+        let inCooldown = false;
+
+        document.addEventListener('click', (e) => {
+            if (inCooldown) return; // Ignore clicks if cooldown is active
+            
+            const now = Date.now();
+            // Remove timestamps older than 1 second (1000ms)
+            clickTimes = clickTimes.filter(t => now - t < 1000);
+            
+            clickTimes.push(now);
+            activeWaves.push(new WaveTracker(e.clientX, e.clientY));
+            
+            // If 3 clicks happen within that 1 second window, trigger the 2-second cooldown
+            if (clickTimes.length >= 2) {
+                inCooldown = true;
+                setTimeout(() => {
+                    inCooldown = false;
+                    clickTimes = []; // Reset the counter for the next batch
+                }, 3000);
+            }
+        });
+
+        // Global Loop with strictly tracked delta time framing
+        let lastRenderTime = performance.now();
+        
+        function animate(currentTime) {
+            requestAnimationFrame(animate);
+            let dt = currentTime - lastRenderTime;
+            lastRenderTime = currentTime;
+            
+            ctx.clearRect(0, 0, width, height); 
+            ctx.globalCompositeOperation = 'lighter';
+            
+            for (let w = activeWaves.length - 1; w >= 0; w--) {
+                let wave = activeWaves[w];
+                
+                if (wave.state === 'PULSING') {
+                    let elapsed = currentTime - wave.startTime;
+                    // Framerate independent uniform speed interpolation
+                    let progress = elapsed / PULSE_DURATION; 
+                    
+                    if (progress >= 1.0) {
+                        wave.pulses = [];
+                        wave.shockwaves.push(new Shockwave(wave.target.x, wave.target.y));
+                        wave.state = 'SHOCKWAVE';
+                    } else {
+                        wave.pulses.forEach(pulse => {
+                            pulse.update(progress);
+                            pulse.draw(ctx);
+                        });
+                    }
+                } 
+                else if (wave.state === 'SHOCKWAVE') {
+                    for (let i = wave.shockwaves.length - 1; i >= 0; i--) {
+                        let sw = wave.shockwaves[i];
+                        sw.update(dt);
+                        sw.draw(ctx);
+                        
+                        if (sw.isDead()) {
+                            wave.shockwaves.splice(i, 1);
+                            wave.state = 'FINISHED';
+                        }
+                    }
+                }
+                
+                if (wave.state === 'FINISHED') {
+                    activeWaves.splice(w, 1);
+                }
+            }
+        }
+
+        resize();
+        requestAnimationFrame(animate);
+    });
+    </script>
