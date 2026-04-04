@@ -6,19 +6,20 @@ import os
 
 width = 650
 height = 650
-num_nodes = 45
-max_dist = 180
+num_nodes = 80
+max_dist = 140
 
 # fixed seed for reproducibility so it always looks exactly the same and doesn't flap around
-random.seed(42)
+random.seed(45)
 
 nodes = []
 # generate more and filter
-for _ in range(num_nodes * 2):
-    x = random.uniform(100, 650)
-    y = random.uniform(0, 550)
+for _ in range(num_nodes * 3):
+    x = random.uniform(0, 650)
+    y = random.uniform(0, 650)
     dist_from_tr = math.sqrt((x - 650)**2 + (y - 0)**2)
-    if dist_from_tr < 550:
+    # Give them more area to spread
+    if dist_from_tr < 680:
         nodes.append((x, y))
     if len(nodes) >= num_nodes:
         break
@@ -58,12 +59,12 @@ content = re.sub(
     flags=re.DOTALL
 )
 
-# Replace after, change rotate(0deg) to rotate(180deg) so that top-right becomes bottom-left
+# Replace after, ensuring we match any deg
 def repl_after(m):
     return m.group(1) + data_url + m.group(2) + '180deg' + m.group(3)
 
 content = re.sub(
-    r'(\.plexus-layer::after\s*\{[^\}]*?background-image:\s*url\(").*?("\);[^\}]*?transform:\s*rotate\()0deg(\);[^\}]*?\})',
+    r'(\.plexus-layer::after\s*\{[^\}]*?background-image:\s*url\(").*?("\);[^\}]*?transform:\s*rotate\()\d+deg(\);[^\}]*?\})',
     repl_after,
     content,
     flags=re.DOTALL
