@@ -9,7 +9,8 @@ A high-performance, modern productivity application built with Django. **Project
 
 ## 🌐 Live Demo
 
-**[Click here to view the live project](https://to-do-01m0.onrender.com)**
+**[👉 Click here to view the live project](https://to-do-01m0.onrender.com)**
+- [NOTICE!] wait for few seconds to run the server.!!
 
 ---
 
