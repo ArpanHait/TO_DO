@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif !important;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            background-color: #0b0f19;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(255, 0, 255, 0.15) 0%, transparent 50%),
+                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            background-position: center, center, center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #e2e8f0;
+        }
+        .update-container {
+            background: rgba(11, 15, 25, 0.6);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), inset 0 0 10px rgba(255, 0, 255, 0.05);
+            padding: 40px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            text-align: center;
+            z-index: 1;
+        }
+        .update-container h2 {
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+        .update-container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .update-container input[type="file"] {
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 4px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #e2e8f0;
+            cursor: pointer;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .update-container input[type="file"]:focus {
+            border-color: #00ffff;
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .update-container input[type="file"]::-webkit-file-upload-button {
+            background-color: #1e293b;
+            color: #00ffff;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-radius: 4px;
+            padding: 8px 16px;
+            margin-right: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .update-container input[type="file"]::-webkit-file-upload-button:hover {
+            background-color: #0f172a;
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+        }
+        .update-container button {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+        }
+        .update-container button:hover {
+            background: linear-gradient(135deg, #00c6f0 0%, #326bc0 100%);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        .update-container button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .update-container a.cancel-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .update-container a.cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .current-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px auto;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+        }
+
+        /* Particles theme configuration */
+        :root {
+            --bg-main: #0b0f19;
+            --grid-line: rgba(0, 255, 255, 0.05);
+            --glow-center: rgba(255, 0, 255, 0.15);
+            --container-bg: rgba(11, 15, 25, 0.6);
+            --container-border: rgba(0, 255, 255, 0.2);
+            --container-shadow: 0 0 20px rgba(0, 255, 255, 0.1), inset 0 0 10px rgba(255, 0, 255, 0.05);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --input-border: rgba(0, 255, 255, 0.3);
+            --accent: #00ffff;
+            --accent-glow: rgba(0, 255, 255, 0.3);
+            --btn-grad-start: #00d2ff;
+            --btn-grad-end: #3a7bd5;
+        }
+
+        body.light-mode {
+            --bg-main: #f0f4f8;
+            --grid-line: rgba(0, 0, 0, 0.04);
+            --glow-center: rgba(0, 0, 255, 0.05);
+            --container-bg: rgba(255, 255, 255, 0.85);
+            --container-border: rgba(0, 0, 0, 0.1);
+            --container-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.05);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --input-bg: rgba(255, 255, 255, 0.8);
+            --input-border: rgba(0, 0, 0, 0.2);
+            --accent: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.3);
+            --btn-grad-start: #3b82f6;
+            --btn-grad-end: #8b5cf6;
+        }
+
+        body {
+            background-color: var(--bg-main) !important;
+            background-image: 
+                radial-gradient(circle at center, var(--glow-center), transparent 60%),
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) !important;
+            background-size: 100% 100%, 40px 40px, 40px 40px !important;
+            color: var(--text-primary);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .themed-container {
+            background: var(--container-bg) !important;
+            border: 1px solid var(--container-border) !important;
+            box-shadow: var(--container-shadow) !important;
+            color: var(--text-primary) !important;
+        }
+        .themed-container h2 { color: var(--text-primary) !important; }
+        .themed-container input[type="file"] {
+            background-color: var(--input-bg) !important;
+            border-color: var(--input-border) !important;
+            color: var(--text-primary) !important;
+        }
+        .themed-container input:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 8px var(--accent-glow) !important;
+        }
+        .themed-container button {
+            background: linear-gradient(135deg, var(--btn-grad-start), var(--btn-grad-end)) !important;
+        }
+        .themed-container a { color: var(--accent) !important; }
+
+        #tsparticles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .theme-switch-wrapper {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        #theme-toggle-btn {
+            background: var(--container-bg);
+            border: 1px solid var(--container-border);
+            color: var(--text-primary);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: var(--container-shadow);
+            transition: all 0.3s ease;
+        }
+        #theme-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .alert-error {
+            color: #fb7185;
+            background-color: rgba(251, 113, 133, 0.1);
+            border-color: rgba(251, 113, 133, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="tsparticles"></div>
+    <div class="theme-switch-wrapper">
+        <button id="theme-toggle-btn" title="Toggle Day/Night Mode">🌙</button>
+    </div>
+
+    <div class="update-container themed-container">
+        <h2>Update Profile Photo</h2>
+        <div id="photoPlaceholder"></div>
+        <div id="alertBox"></div>
+        <form id="profileForm">
+            <input type="file" id="imageInput" accept="image/*" title="Choose a new profile photo" aria-label="Choose a new profile photo" required>
+            <button type="submit" id="submitBtn">Upload Photo</button>
+            <a href="dashboard.html" class="cancel-btn">Cancel</a>
+        </form>
+    </div>
+
+    <script>
+        // Check Auth immediately
+        configPromise.then(() => {
+            const token = getToken();
+            const userObj = getUser();
+            if (!token || !userObj) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Render current photo
+            const placeholder = document.getElementById('photoPlaceholder');
+            if (userObj.image_url) {
+                placeholder.innerHTML = `<img src="${getAvatarUrl(userObj.image_url)}" alt="Current Photo" class="current-photo">`;
+            } else {
+                const firstLetter = userObj.username.charAt(0).toUpperCase();
+                placeholder.innerHTML = `
+                    <div class="current-photo" style="display: flex; justify-content: center; align-items: center; background: rgba(0, 255, 255, 0.1); color: #00ffff; font-size: 3rem; font-weight: bold; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);">
+                        ${firstLetter}
+                    </div>
+                `;
+            }
+
+            // Sync theme
+            if (localStorage.getItem('theme') !== 'dark') {
+                document.body.classList.add('light-mode');
+            }
+        });
+
+        // Submit Logic
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const alertBox = document.getElementById('alertBox');
+            const submitBtn = document.getElementById('submitBtn');
+            alertBox.innerHTML = '';
+            
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+
+            await configPromise;
+
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                const res = await fetch(`${API_BASE}/api/profile/update/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Token ${getToken()}`
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to upload image');
+
+                // Update local storage user profile image
+                const currentUser = getUser();
+                currentUser.image_url = data.user.image_url;
+                setUser(currentUser);
+
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                alertBox.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Upload Photo';
+            }
+        });
+
+        // Theme and Particles setup
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const toggleBtn = document.getElementById('theme-toggle-btn');
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+
+            const loadParticles = (theme) => {
+                let pColor = theme === 'light' ? "#3b82f6" : "#00ffff";
+                let lColor = theme === 'light' ? "#8b5cf6" : "#ff00ff";
+                
+                tsParticles.load("tsparticles", {
+                    fpsLimit: 60,
+                    particles: {
+                        number: { value: 50, density: { enable: true, value_area: 800 } },
+                        color: { value: pColor },
+                        links: { enable: true, color: lColor, distance: 150, opacity: 0.4, width: 1 },
+                        move: { enable: true, speed: 1.5, direction: "none", random: false, straight: false, outModes: "out" },
+                        size: { value: { min: 1, max: 3 } },
+                        opacity: { value: 0.5 }
+                    },
+                    interactivity: {
+                        events: {
+                            onHover: { enable: true, mode: "grab" },
+                            onClick: { enable: true, mode: "push" }
+                        },
+                        modes: {
+                            grab: { distance: 180, links: { opacity: 0.8 } },
+                            push: { quantity: 4 }
+                        }
+                    }
+                });
+            };
+
+            const applyTheme = (theme) => {
+                if (theme === 'light') {
+                    body.classList.add('light-mode');
+                    toggleBtn.textContent = '☀️';
+                } else {
+                    body.classList.remove('light-mode');
+                    toggleBtn.textContent = '🌙';
+                }
+                localStorage.setItem('theme', theme);
+                loadParticles(theme);
+            };
+
+            applyTheme(savedTheme);
+
+            toggleBtn.addEventListener('click', () => {
+                const current = body.classList.contains('light-mode') ? 'light' : 'dark';
+                applyTheme(current === 'light' ? 'dark' : 'light');
+            });
+        });
+    </script>
+</body>
+</html>
