@@ -1,0 +1,22 @@
+# Environments
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# Databases
+db.sqlite3
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Media / static files
+media/
+static/
+
+# OS specific files
+.DS_Store
+Thumbs.db
