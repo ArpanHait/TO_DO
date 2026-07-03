@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOME</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="app.js"></script>
+    <style>
+        .top{
+            text-align: center;
+            font-size: 3.4em;
+            color: #1e293b; /* Dark Slate Grey */
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif !important;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(135deg, #0f172a, #1e1b4b);
+            background-size: 40px 40px, 40px 40px, 100% 100%;
+            background-attachment: fixed;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 80px; /* Provide space for the fixed navbar */
+            box-sizing: border-box; /* Ensure padding is included in the total height */
+        }
+        
+        .hero {
+            flex: 1; /* Pushes the about section to the bottom */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            position: relative;
+            background: #f1f5f9; /* Bluish Gray */
+            padding: 80px 50px;
+            border-radius: 32px;
+            box-shadow: 
+                0 0 0 16px #ffffff, /* The prominent white space around the container */
+                0 15px 50px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 750px;
+            width: 90%;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            z-index: 10; 
+            overflow: visible;
+        }
+        
+        .plexus-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 32px; /* Link this to container radius */
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Static Decorative Grid Corners (High Intensity - Matched to Theme) */
+        .plexus-layer::before,
+        .plexus-layer::after {
+            content: "";
+            position: absolute;
+            width: 650px;
+            height: 650px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            opacity: 0.9;
+        }
+        
+        .container-label {
+            position: absolute;
+            top: 25px;
+            left: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 1.1em;
+            letter-spacing: -0.5px;
+            z-index: 20;
+        }
+
+        .logo-svg {
+            width: 28px;
+            height: 28px;
+            stroke: #1e293b;
+            transition: all 0.3s ease;
+        }
+        
+        .container-label:hover .logo-svg {
+            transform: scale(1.1) rotate(90deg);
+            stroke: #3b82f6;
+        }
+        
+        /* Background Mesh deactivated for Minimalist Aesthetic */
+        #focusMeshCanvas {
+            display: none;
+        }
+
+        .container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .container p {
+            font-size: 1.25em;
+            color: #64748b; /* Slate grey */
+            line-height: 1.7;
+            max-width: 650px;
+            margin: 0 auto 40px auto;
+            font-weight: 400;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #0056b3; /* Dark Deep Blue from image */
+            color: white;
+            padding: 16px 40px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .btn:hover {
+            background-color: #004494; 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 86, 179, 0.4);
+        }
+
+        .secondary-link {
+            display: block;
+            color: #64748b;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .secondary-link:hover {
+            color: #1e293b;
+        }
+
+        .icon-wrapper {
+            position: relative;
+            display: inline-block;
+            perspective: 1000px; /* Gives the 3D depth effect */
+            margin-bottom: 10px;
+        }
+
+        .hero-icon {
+            font-size: 13rem;
+            display: inline-block;
+            position: relative;
+            z-index: 11; /* Top most icon */
+            transition: transform 0.5s ease-in-out;
+            cursor: pointer;
+        }
+        
+        .icon-wrapper:hover .hero-icon {
+            transform: translateY(-15px) scale(1.15) rotate(360deg);
+        }
+        
+        .hover-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* Starts pushed back and rotated flat backwards */
+            transform: translate(-50%, -50%) translateZ(-100px) rotateX(-90deg);
+            opacity: 0;
+            font-size: 12rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3b82f6, #cf00d6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            white-space: nowrap;
+            z-index: 10; /* Content on top */
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Bouncy pop-up curve */
+            pointer-events: none;
+            margin-top: -35px;
+        }
+
+        .icon-wrapper:hover .hover-text {
+            opacity: 1;
+            /* Folds forward and lifts up above the icon */
+            transform: translate(-50%, -5.5rem) translateZ(0) rotateX(0deg);
+        }
+        
+        /* About Section Styles */
+        .about-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(24px);
+            will-change: transform;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 -10px 40px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10; /* Ensures it sits above decorative elements */
+            color: #ffffff;
+            padding: 80px 20px;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .about-section h2 {
+            font-size: 2.5em;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #3b82f6;
+        }
+        
+        .about-section p.lead {
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+            color: #d1d5db;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+        
+        .about-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .about-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            will-change: transform;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 30px;
+            border-radius: 16px;
+            width: 280px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 11;
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .about-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+        
+        .about-card h3 {
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .about-card p {
+            color: #9ca3af;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        /* Wide Contact Layout */
+        .contact-layout {
+            max-width: 90%;
+            margin: 60px auto 0;
+            border-top: 1px solid #4b5563;
+            padding-top: 50px;
+            text-align: left;
+        }
+        
+        .contact-layout h3 {
+            color: #3b82f6;
+            font-size: 2em;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 40px;
+        }
+        
+        .contact-columns {
+            display: flex;
+            justify-content: center;
+            gap: 100px; 
+            flex-wrap: wrap;
+            margin-right: -50px;
+        }
+        
+        .contact-column {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .contact-column h4 {
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            font-size: 1.3em;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        
+        .contact-column h4::before,
+        .contact-column h4::after {
+            content: "";
+            flex-grow: 1;
+            height: 2px;
+            background-color: #3b82f6;
+        }
+        
+        .contact-column h4::before {
+            margin-right: 15px;
+        }
+        
+        .contact-column h4::after {
+            margin-left: 15px;
+        }
+        
+        .contact-info-row {
+            display: flex;
+            margin-bottom: 15px;
+            color: #d1d5db;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+        
+        .contact-info-row strong {
+            color: #ffffff;
+            min-width: 140px;
+            flex-shrink: 0;
+        }
+        
+        /* Social Links */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .social-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.107);
+            color: #2dff8f97; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            border: 1px solid rgba(27, 255, 194, 0.731);
+        }
+
+        .social-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+            transition: transform 0.3s ease;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-8px);
+            background: #3b82f6; /* Accent color */
+            color: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .social-icon:hover svg {
+            transform: scale(1.15);
+        }
+        
+        .social-icon.discord:hover {
+            background: #5865F2;
+            border-color: #5865F2;
+            box-shadow: 0 10px 20px rgba(88, 101, 242, 0.4);
+        }
+        
+        .social-icon.linkedin:hover {
+            background: #0A66C2;
+            border-color: #0A66C2;
+            box-shadow: 0 10px 20px rgba(10, 102, 194, 0.4);
+        }
+        
+        .social-icon.twitter:hover {
+            background: #1DA1F2;
+            border-color: #1DA1F2;
+            box-shadow: 0 10px 20px rgba(29, 161, 242, 0.4);
+        }
+        
+        .social-icon.github:hover {
+            background: #333;
+            border-color: #333;
+            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="welcome-page">
+    <!-- Navbar (Inlined from templates/navbar.html to keep exact CSS styles) -->
+    <script>
+        if (localStorage.getItem('theme') !== 'dark') {
+            document.body.classList.add('light-mode');
+        }
+    </script>
+    <style>
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            will-change: transform; /* Hardware acceleration for glassmorphism */
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+        .navbar .brand a {
+            background: linear-gradient(130deg, #354a60, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            display: inline-block;
+            position: relative;
+            transition: transform 0.3s ease-in-out;
+        }
+        .navbar .brand a::after {
+            content: ">>>DO IT RIGHT NOW! 🫵"; /* Change this to the extra text you want */
+            position: absolute;
+            left: 100%;
+            margin-left: 15px;
+            white-space: nowrap;
+            color: #d66eff9e; /* Solid lighter purple instead of transparent purple */
+            -webkit-text-fill-color: initial;
+            opacity: 0; /* Hidden initial state */
+            transform: translateX(-10px);
+            transition: all 0.20s ease-in-out;
+            pointer-events: none; /* Prevents it from blocking clicks */
+        }
+        .navbar .brand a:hover {
+            transform: translateY(-2px) scale(1.02);
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .navbar .brand a:hover::after {
+            opacity: 1;
+            text-shadow: 0px 1px 1px rgba(125, 74, 236, 0.6);
+            transform: translateX(0);
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .nav-links a {
+            color: #e5e7eb;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease-in-out;
+        }
+        .nav-links a .material-symbols-outlined {
+            font-size: 1.5em;
+            line-height: 1;
+        }
+        .nav-links a:hover {
+            color: #3b82f6; /* Keep the color change */
+            transform: translateY(-3px) scale(1.05); /* Moves up and scales up */
+            text-shadow: 9px 11px 1px rgba(125, 74, 236, 0.274);/* A more subtle, glowing shadow */
+        }
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            fill: #e5e7eb;
+        }
+        .theme-toggle .moon-icon {
+            display: none;
+        }
+        .theme-toggle .sun-icon {
+            display: block;
+        }
+        body.light-mode {
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+            background-size: 40px 40px, 40px 40px, 100% 100% !important;
+            background-attachment: fixed !important;
+            color: #1f2937 !important;
+        }
+        body.light-mode .navbar {
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        body.light-mode .nav-links a { color: #4b5563; }
+        body.light-mode .nav-links a:hover { color: #3b82f6; }
+        body.light-mode .theme-toggle,
+        body.light-mode .profile-icon { background: #f3f4f6; }
+        body.light-mode .theme-toggle:hover,
+        body.light-mode .profile-icon:hover { background: #e5e7eb; }
+        body.light-mode .theme-toggle svg,
+        body.light-mode .profile-icon svg { fill: #4b5563; }
+        body.light-mode .theme-toggle .sun-icon { display: none; }
+        body.light-mode .theme-toggle .moon-icon { display: block; }
+        body.light-mode .about-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3));
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 -8px 32px 0 rgba(31, 38, 135, 0.1);
+            color: #374151;
+        }
+        body.light-mode .about-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        body.light-mode .about-card:hover {
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+            border-color: #ffffff;
+        }
+        body.light-mode .about-card h3,
+        body.light-mode .contact-column h4,
+        body.light-mode .contact-info-row strong { color: #1f2937; }
+        body.light-mode .about-card p,
+        body.light-mode .about-section p.lead,
+        body.light-mode .contact-info-row { color: #4b5563; }
+        .profile-menu {
+            position: relative;
+            display: inline-block;
+        }
+        .profile-icon {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .profile-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .profile-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #e5e7eb;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background-color: #ffffff;
+            min-width: 160px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1;
+            flex-direction: column;
+        }
+        .dropdown-content.show {
+            display: flex;
+        }
+        .dropdown-content a {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #374151;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+        .dropdown-content a .material-symbols-outlined {
+            font-size: 1.5em;
+            line-height: 1;
+        }
+        .dropdown-content a:hover {
+            background-color: #f9fafb;
+            color: #3b82f6;
+        }
+        .user-greeting {
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+            margin: 0;
+            background-color: #f9fafb;
+            cursor: default;
+        }
+        #networkCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+        body {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    </style>
+    <canvas id="networkCanvas"></canvas>
+    
+    <div class="navbar">
+        <div class="brand">
+            <a href="index.html">YOU HAVE TO>DO</a>
+        </div>
+        <div class="nav-right">
+            <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/>
+                </svg>
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+                </svg>
+            </div>
+            <div class="nav-links">
+                <a href="dashboard.html"><span class="material-symbols-outlined">dashboard_2_edit</span>Dashboard</a>
+            </div>
+            <div class="profile-menu">
+                <div class="profile-icon" onclick="toggleProfileDropdown()" id="navProfileIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <div class="dropdown-content" id="profileDropdown">
+                    <!-- Dynamic Dropdown Content -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="hero">
+        <div class="container">
+            <div class="plexus-layer"></div>
+            <div class="container-label">
+                <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+                    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+                    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+                    <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+                    <circle cx="12" cy="12" r="3" />
+                </svg>
+                <span>Focus To-Do</span>
+            </div>
+            <div class="icon-wrapper">
+                <span class="hover-text">TAR~ >GET!</span>
+                <span class="hero-icon">🎯</span>
+            </div>
+            <h1 class="top">Welcome to The Task Manager.</h1>
+            <p>Empowering productivity through sophisticated tracking, strategic insight, and innovative task management. Explore our tailored tools designed for sustained professional growth.</p>
+            <a href="login.html" id="heroActionBtn" class="btn">Let's Do IT</a>
+            <a href="#about" class="secondary-link">Learn More About Us</a>
+        </div>
+    </div>
+
+    <section id="about" class="about-section">
+        <h2>About Us</h2>
+        <p class="lead">Welcome to Focus To-Do! We are a passionate team dedicated to helping you master your time and boost your productivity. Our mission is to provide an intuitive and powerful task management experience that keeps you focused on what truly matters. We believe that clarity, organization, and consistent action lead to extraordinary results.</p>
+        
+        <div class="about-grid">
+            <div class="about-card">
+                <h3>Our Vision</h3>
+                <p>To empower every individual to achieve their daily goals with ease, creating a world where productivity is effortless and meaningful.</p>
+            </div>
+            <div class="about-card">
+                <h3>Our Journey</h3>
+                <p>Started in 2026, Focus To-Do began with a simple question: How can we make task management feel less like a chore and more like a superpower? Today, we're proud to support thousands in their quest for peak performance.</p>
+            </div>
+        </div>
+
+        <div class="contact-layout">
+            <h3>Contact Information</h3>
+            <div class="contact-columns">
+                <div class="contact-column">
+                    <h4>Company Details</h4>
+                    <div class="contact-info-row"><strong>Name:</strong> Focus To-Do .</div>
+                    <div class="contact-info-row"><strong>Email:</strong> contact@focustodo.com</div>
+                    <div class="contact-info-row"><strong>Contact No:</strong> +31 8509200280</div>
+                    <div class="contact-info-row"><strong>Address:</strong> a 20/30 Amarpur Pursurah Road, Web State 712414</div>
+                    <div class="contact-info-row"><strong>Other Services:</strong> Time Tracking, Priority Consulting, Workflow Optimization</div>
+                </div>
+                <div class="contact-column">
+                    <h4>Support & Global Reach</h4>
+                    <div class="contact-info-row"><strong>Support Email:</strong> support@focustodo.com</div>
+                    <div class="contact-info-row"><strong>Post Email:</strong> postal@focustodo.com</div>
+                    <div class="contact-info-row"><strong>Presence:</strong> West Bengal, India, Asia Pacific</div>
+                    <div class="contact-info-row"><strong>Active Hours:</strong> 24/7 Digital Support</div>
+                    <div class="contact-info-row"><strong>Customer Care:</strong> 1-800-FOCUS-HELP</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://discord.com/users/taplu_g" class="social-icon discord" aria-label="Discord" title="Discord" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
+                </svg>
+            </a>
+            <a href="https://www.linkedin.com/in/arpan-hait" class="social-icon linkedin" aria-label="LinkedIn" title="LinkedIn" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+            </a>
+            <a href="https://x.com/arpa_nhait" class="social-icon twitter" aria-label="Twitter" title="Twitter" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                </svg>
+            </a>
+            <a href="https://github.com/ArpanHait" class="social-icon github" aria-label="GitHub" title="GitHub" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Theme / Dropdown script and particles network anim -->
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            if (document.body.classList.contains('light-mode')) {
+                localStorage.setItem('theme', 'light');
+            } else {
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function toggleProfileDropdown() {
+            document.getElementById("profileDropdown").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.profile-icon')) {
+                var dropdown = document.getElementById("profileDropdown");
+                if (dropdown && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        }
+
+        // Particle System
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function initParticles() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            particles = [];
+            const numParticles = Math.floor((width * height) / 12000); 
+            for (let i = 0; i < numParticles; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 1.2,
+                    vy: (Math.random() - 0.5) * 1.2,
+                    radius: Math.random() * 2 + 1
+                });
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, width, height);
+            const isLightMode = document.body.classList.contains('light-mode');
+            const particleColor = isLightMode ? 'rgba(79, 70, 229, 0.7)' : 'rgba(139, 92, 246, 0.6)';
+            const lineRGB = isLightMode ? '99, 102, 241' : '59, 130, 246';
+            const lineAlpha = isLightMode ? 0.6 : 0.4;
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                if (p.x < 0 || p.x > width) p.vx *= -1;
+                if (p.y < 0 || p.y > height) p.vy *= -1;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = particleColor;
+                ctx.fill();
+                
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j];
+                    let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    
+                    if (dist < 130) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(${lineRGB}, ${lineAlpha * (1 - dist / 130)})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', initParticles);
+        initParticles();
+        animateParticles();
+
+        // Populate dynamic profile dropdown menu
+        configPromise.then(() => {
+            const token = getToken();
+            const userObj = getUser();
+            const actionBtn = document.getElementById('heroActionBtn');
+            const profileIcon = document.getElementById('navProfileIcon');
+            const dropdown = document.getElementById('profileDropdown');
+
+            if (token && userObj) {
+                actionBtn.href = "dashboard.html";
+                actionBtn.textContent = "Let's Do IT.";
+
+                if (userObj.image_url) {
+                    profileIcon.innerHTML = `<img src="${getAvatarUrl(userObj.image_url)}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                } else {
+                    const firstLetter = userObj.username.charAt(0).toUpperCase();
+                    profileIcon.innerHTML = `<span style="font-size: 1.2rem; font-weight: bold; color: #e5e7eb;">${firstLetter}</span>`;
+                }
+
+                dropdown.innerHTML = `
+                    <div class="user-greeting">Hi, ${userObj.username}</div>
+                    <a href="index.html"><span class="material-symbols-outlined">home</span>Home</a>
+                    <a href="update_profile.html"><span class="material-symbols-outlined">background_replace</span>Update Image</a>
+                    <a href="index.html#about" onclick="toggleProfileDropdown()"><span class="material-symbols-outlined">chat_info</span>About</a>
+                    <a href="#" id="logoutBtn">Logout<span class="material-symbols-outlined">logout</span></a>
+                `;
+                document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            } else {
+                actionBtn.href = "login.html";
+                actionBtn.textContent = "Let's Do IT";
+
+                profileIcon.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                `;
+
+                dropdown.innerHTML = `
+                    <a href="login.html"><span class="material-symbols-outlined">login</span>Login</a>
+                    <a href="register.html"><span class="material-symbols-outlined">how_to_reg</span>Register</a>
+                    <a href="index.html#about" onclick="toggleProfileDropdown()"><span class="material-symbols-outlined">chat_info</span>About</a>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
