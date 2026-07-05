@@ -95,26 +95,36 @@ def update_profile_view(request):
         "user": get_user_data(request.user)
     })
 
+from django.db.models.functions import TruncDate
+from django.db.models import Count
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def stats_view(request):
     tasks = Task.objects.filter(user=request.user, is_deleted=False)
-    total_completed = tasks.filter(completed=True).count()
+    total_completed = Task.objects.filter(user=request.user, completed=True).count()
     total_pending = tasks.filter(completed=False).count()
 
-    # Generate heatmap dictionary format
-    heatmap_data = {}
-    completed_tasks = tasks.filter(completed=True, completed_at__isnull=False)
-    for task in completed_tasks:
-        # Convert to user timezone/date format YYYY-MM-DD
-        date_str = task.completed_at.strftime("%Y-%m-%d")
-        heatmap_data[date_str] = heatmap_data.get(date_str, 0) + 1
+    # Aggregating task completions by day to render the Github-style Heatmap Calendar
+    # NOTE: This intentionally does NOT filter out 'is_deleted', natively preserving historical Heatmap data forever!
+    completed_counts = (
+        Task.objects.filter(user=request.user, completed=True, completed_at__isnull=False)
+        .annotate(date=TruncDate('completed_at'))
+        .values('date')
+        .annotate(count=Count('id'))
+    )
+
+    heatmap_data = {
+        obj['date'].strftime('%Y-%m-%d'): obj['count']
+        for obj in completed_counts if obj['date']
+    }
 
     return Response({
         "total_completed": total_completed,
         "total_pending": total_pending,
         "heatmap_data": heatmap_data
     })
+
 
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
