@@ -860,9 +860,12 @@
                 
                 for (let j = i + 1; j < particles.length; j++) {
                     let p2 = particles[j];
-                    let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    let dx = p.x - p2.x;
+                    let dy = p.y - p2.y;
+                    let distSq = dx * dx + dy * dy;
                     
-                    if (dist < 130) {
+                    if (distSq < 16900) {
+                        let dist = Math.sqrt(distSq);
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
