@@ -2,10 +2,15 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import dotenv
 
 
 def main():
     """Run administrative tasks."""
+    # This will load the .env file's variables into the environment for local development.
+    # In production environments like Render, variables are set directly,
+    # but this makes running the app locally much easier.
+    dotenv.load_dotenv()
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'DJANGO.settings')
     try:
         from django.core.management import execute_from_command_line
