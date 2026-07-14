@@ -3,3 +3,4 @@ django-cors-headers
 djangorestframework
 dj-database-url
 whitenoise
+psycopg[binary]
