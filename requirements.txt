@@ -4,3 +4,4 @@ djangorestframework
 dj-database-url
 whitenoise
 psycopg[binary]
+Pillow
