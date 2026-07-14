@@ -1,4 +1,3 @@
-import datetime
 from django.utils import timezone
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -96,7 +95,7 @@ def update_profile_view(request):
     })
 
 from django.db.models.functions import TruncDate
-from django.db.models import Count
+from django.db.models import Case, Count, IntegerField, Value, When
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -130,13 +129,16 @@ def stats_view(request):
 @permission_classes([IsAuthenticated])
 def tasks_view(request):
     if request.method == "GET":
-        tasks = Task.objects.filter(user=request.user, is_deleted=False).order_index = 0
         # Order by completed asc, and then by priority high/medium/low, then by created_at desc
-        # Let's do python sorting to keep it clean and robust
-        tasks_list = list(Task.objects.filter(user=request.user, is_deleted=False))
-        
-        priority_map = {"High": 0, "Medium": 1, "Low": 2}
-        tasks_list.sort(key=lambda t: (t.completed, priority_map.get(t.priority, 2), -(t.created_at.timestamp() if t.created_at else 0)))
+        priority_order = Case(
+            When(priority="High", then=Value(0)),
+            When(priority="Medium", then=Value(1)),
+            default=Value(2),
+            output_field=IntegerField(),
+        )
+        tasks = Task.objects.filter(user=request.user, is_deleted=False).order_by(
+            "completed", priority_order, "-created_at"
+        )
 
         data = [{
             "id": t.id,
@@ -145,7 +147,7 @@ def tasks_view(request):
             "priority": t.priority,
             "created_at": t.created_at,
             "completed_at": t.completed_at
-        } for t in tasks_list]
+        } for t in tasks]
         return Response(data)
 
     elif request.method == "POST":

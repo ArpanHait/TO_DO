@@ -269,7 +269,7 @@
             e.preventDefault();
             const alertBox = document.getElementById('alertBox');
             const submitBtn = document.getElementById('submitBtn');
-            alertBox.innerHTML = '';
+            alertBox.replaceChildren();
             
             const uname = document.getElementById('username').value;
             const pwd = document.getElementById('password').value;
@@ -298,7 +298,10 @@
                     window.location.href = 'dashboard.html';
                 }, 300);
             } catch (err) {
-                alertBox.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-error';
+                alert.textContent = err instanceof Error ? err.message : 'Unable to log in. Please try again.';
+                alertBox.replaceChildren(alert);
                 submitBtn.disabled = false;
                 submitBtn.value = 'Login';
             }

@@ -862,6 +862,7 @@
                 window.location.href = 'login.html';
                 return;
             }
+            const username = typeof userObj.username === 'string' ? userObj.username : '';
 
             // Sync theme
             if (localStorage.getItem('theme') !== 'dark') {
@@ -869,26 +870,34 @@
             }
 
             // Welcome greeting
-            document.getElementById('welcomeGreeting').textContent = `👋Welcome back, ${userObj.username}!`;
+            document.getElementById('welcomeGreeting').textContent = `👋Welcome back, ${username}!`;
 
             // Profile Picture setup
             const profileIcon = document.getElementById('navProfileIcon');
+            profileIcon.replaceChildren();
             if (userObj.image_url) {
-                profileIcon.innerHTML = `<img src="${getAvatarUrl(userObj.image_url)}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                const avatar = document.createElement('img');
+                avatar.src = getAvatarUrl(userObj.image_url);
+                avatar.alt = 'Profile';
+                avatar.style.cssText = 'width: 100%; height: 100%; border-radius: 50%; object-fit: cover;';
+                profileIcon.append(avatar);
             } else {
-                const firstLetter = userObj.username.charAt(0).toUpperCase();
-                profileIcon.innerHTML = `<span style="font-size: 1.2rem; font-weight: bold; color: #e5e7eb;">${firstLetter}</span>`;
+                const initial = document.createElement('span');
+                initial.style.cssText = 'font-size: 1.2rem; font-weight: bold; color: #e5e7eb;';
+                initial.textContent = username.charAt(0).toUpperCase();
+                profileIcon.append(initial);
             }
 
             // Render dropdown content
             const dropdown = document.getElementById('profileDropdown');
             dropdown.innerHTML = `
-                <div class="user-greeting">Hi, ${userObj.username}</div>
+                <div class="user-greeting"></div>
                 <a href="index.html"><span class="material-symbols-outlined">home</span>Home</a>
                 <a href="update_profile.html"><span class="material-symbols-outlined">background_replace</span>Update Image</a>
                 <a href="index.html#about"><span class="material-symbols-outlined">chat_info</span>About</a>
                 <a href="#" id="logoutBtn">Logout<span class="material-symbols-outlined">logout</span></a>
             `;
+            dropdown.querySelector('.user-greeting').textContent = `Hi, ${username}`;
             document.getElementById('logoutBtn').addEventListener('click', (e) => {
                 e.preventDefault();
                 logout();
@@ -951,6 +960,8 @@
             const particleColor = isLightMode ? 'rgba(79, 70, 229, 0.7)' : 'rgba(139, 92, 246, 0.6)';
             const lineRGB = isLightMode ? '99, 102, 241' : '59, 130, 246';
             const lineAlpha = isLightMode ? 0.6 : 0.4;
+            const connectionDistance = 130;
+            const connectionDistanceSquared = connectionDistance * connectionDistance;
 
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
@@ -971,12 +982,12 @@
                     let dy = p.y - p2.y;
                     let distSq = dx * dx + dy * dy;
                     
-                    if (distSq < 16900) {
+                    if (distSq < connectionDistanceSquared) {
                         let dist = Math.sqrt(distSq);
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                         ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(${lineRGB}, ${lineAlpha * (1 - dist / 130)})`;
+                        ctx.strokeStyle = `rgba(${lineRGB}, ${lineAlpha * (1 - dist / connectionDistance)})`;
                         ctx.lineWidth = 0.8;
                         ctx.stroke();
                     }

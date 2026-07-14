@@ -78,26 +78,35 @@ A high-performance, modern productivity application built with Django. **TO_DO**
    cd PROJECT_BCT
    ```
 
-2. **Install Dependencies**
+2. **Set up Environment**
 
-   ```bash
-   pip install django
+   Create a `.env` file in the project root for your environment variables. For local development, you can start with this content:
+
+   ```
+   SECRET_KEY='django-insecure-replace-this-with-a-real-secret-key'
+   DEBUG=True
    ```
 
-3. **Database Migration**
+3. **Install Dependencies**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Database Migration**
 
    ```bash
    python manage.py migrate
    ```
 
-4. **Background Generation (Optional)**
+5. **Background Generation (Optional)**
    If you want to refresh the plexus background patterns:
 
    ```bash
    python generate.py
    ```
 
-5. **Run the Development Server**
+6. **Run the Development Server**
 
    ```bash
    python manage.py runserver

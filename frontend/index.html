@@ -893,21 +893,30 @@
             if (token && userObj) {
                 actionBtn.href = "dashboard.html";
                 actionBtn.textContent = "Let's Do IT.";
+                const username = typeof userObj.username === 'string' ? userObj.username : '';
+                profileIcon.replaceChildren();
 
                 if (userObj.image_url) {
-                    profileIcon.innerHTML = `<img src="${getAvatarUrl(userObj.image_url)}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                    const avatar = document.createElement('img');
+                    avatar.src = getAvatarUrl(userObj.image_url);
+                    avatar.alt = 'Profile';
+                    avatar.style.cssText = 'width: 100%; height: 100%; border-radius: 50%; object-fit: cover;';
+                    profileIcon.append(avatar);
                 } else {
-                    const firstLetter = userObj.username.charAt(0).toUpperCase();
-                    profileIcon.innerHTML = `<span style="font-size: 1.2rem; font-weight: bold; color: #e5e7eb;">${firstLetter}</span>`;
+                    const initial = document.createElement('span');
+                    initial.style.cssText = 'font-size: 1.2rem; font-weight: bold; color: #e5e7eb;';
+                    initial.textContent = username.charAt(0).toUpperCase();
+                    profileIcon.append(initial);
                 }
 
                 dropdown.innerHTML = `
-                    <div class="user-greeting">Hi, ${userObj.username}</div>
+                    <div class="user-greeting"></div>
                     <a href="index.html"><span class="material-symbols-outlined">home</span>Home</a>
                     <a href="update_profile.html"><span class="material-symbols-outlined">background_replace</span>Update Image</a>
                     <a href="index.html#about" onclick="toggleProfileDropdown()"><span class="material-symbols-outlined">chat_info</span>About</a>
                     <a href="#" id="logoutBtn">Logout<span class="material-symbols-outlined">logout</span></a>
                 `;
+                dropdown.querySelector('.user-greeting').textContent = `Hi, ${username}`;
                 document.getElementById('logoutBtn').addEventListener('click', (e) => {
                     e.preventDefault();
                     logout();

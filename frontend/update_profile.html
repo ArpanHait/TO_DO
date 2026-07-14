@@ -297,7 +297,7 @@
             e.preventDefault();
             const alertBox = document.getElementById('alertBox');
             const submitBtn = document.getElementById('submitBtn');
-            alertBox.innerHTML = '';
+            alertBox.replaceChildren();
             
             const fileInput = document.getElementById('imageInput');
             const file = fileInput.files[0];
@@ -330,7 +330,10 @@
 
                 window.location.href = 'dashboard.html';
             } catch (err) {
-                alertBox.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-error';
+                alert.textContent = err instanceof Error ? err.message : 'Failed to upload image. Please try again.';
+                alertBox.replaceChildren(alert);
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Upload Photo';
             }
