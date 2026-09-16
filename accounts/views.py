@@ -115,6 +115,26 @@ def complete_task(request, id):
     return redirect('dashboard')
 
 @login_required(login_url='login')
+def undo_delete_task(request, id):
+    task = get_object_or_404(Task, id=id, user=request.user)
+    task.is_deleted = False
+    task.save()
+    return redirect('dashboard')
+
+@login_required(login_url='login')
+def edit_task(request, id):
+    if request.method == "POST":
+        task = get_object_or_404(Task, id=id, user=request.user)
+        title = request.POST.get('title')
+        priority = request.POST.get('priority')
+        if title:
+            task.title = title.strip()
+        if priority in ['Low', 'Medium', 'High']:
+            task.priority = priority
+        task.save()
+    return redirect('dashboard')
+
+@login_required(login_url='login')
 def update_profile(request):
     if request.method == "POST":
         image = request.FILES.get('image')

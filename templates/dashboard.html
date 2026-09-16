@@ -3,299 +3,1045 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard TO_DO</title>
-    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=2">
-    <link rel="icon" type="image/png" href="/static/favicon.png?v=2">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <title>Dashboard - TO_DO</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png?v=3">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=3">
+    <link rel="apple-touch-icon" href="/static/favicon.png?v=3">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <style>
+        :root {
+            --bg-body: #090d16;
+            --card-bg: rgba(15, 23, 42, 0.78);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #2563eb;
+            --accent-blue-hover: #1d4ed8;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #ef4444;
+            --input-bg: #0b1120;
+            --input-border: #334155;
+            --item-bg: rgba(15, 23, 42, 0.6);
+            --item-hover: rgba(30, 41, 59, 0.8);
+        }
+
+        /* Light Mode - Clean White Containers */
+        body.light-mode {
+            --bg-body: #f5f7fa;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
+            --input-bg: #ffffff;
+            --input-border: #d1d5db;
+            --item-bg: #ffffff;
+            --item-hover: #f9fafb;
+        }
+
+        body.light-mode .stat-card,
+        body.light-mode .progress-card,
+        body.light-mode .heatmap-container,
+        body.light-mode .todo-section {
+            background: #ffffff !important;
+            border-color: #e2e8f0 !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        body.light-mode .stat-card:hover {
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        body.light-mode .stat-card h3 {
+            color: #6b7280 !important;
+        }
+
+        body.light-mode .progress-title-wrapper,
+        body.light-mode .heatmap-title,
+        body.light-mode .todo-header {
+            color: #111827 !important;
+            border-color: #e2e8f0 !important;
+        }
+
+        body.light-mode .progress-track {
+            background: #e2e8f0 !important;
+        }
+
+        body.light-mode .heat-box.level-0 { background-color: #ebedf0 !important; }
+        body.light-mode .heat-box.level-1 { background-color: #93c5fd !important; }
+        body.light-mode .heat-box.level-2 { background-color: #3b82f6 !important; }
+        body.light-mode .heat-box.level-3 { background-color: #cf00d6 !important; }
+        body.light-mode .heat-box.level-4 { background-color: #ff00ff !important; box-shadow: 0 0 10px rgba(255, 0, 255, 0.7) !important; }
+
+        body.light-mode .heatmap-scroll-wrapper::-webkit-scrollbar-track { background: #f1f5f9; }
+        body.light-mode .heatmap-scroll-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; }
+        body.light-mode .heatmap-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        body.light-mode .todo-toolbar {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+
+        body.light-mode .filter-group {
+            background: #f1f5f9 !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+
+        body.light-mode .filter-tab {
+            color: #64748b;
+        }
+
+        body.light-mode .filter-tab:hover {
+            color: #111827 !important;
+            background: #e2e8f0;
+        }
+
+        body.light-mode .filter-tab.active {
+            background: var(--accent-blue) !important;
+            color: #ffffff !important;
+        }
+
+        body.light-mode .filter-tab.active:hover {
+            background: var(--accent-blue-hover) !important;
+            color: #ffffff !important;
+        }
+
+        body.light-mode .filter-tab.priority-tag.high.active {
+            background: var(--accent-rose) !important;
+            color: #ffffff !important;
+        }
+
+        body.light-mode .filter-tab.priority-tag.high.active:hover {
+            background: #dc2626 !important;
+            color: #ffffff !important;
+        }
+
+        body.light-mode .filter-tab.priority-tag.medium.active {
+            background: var(--accent-amber) !important;
+            color: #ffffff !important;
+        }
+
+        body.light-mode .filter-tab.priority-tag.medium.active:hover {
+            background: #d97706 !important;
+            color: #ffffff !important;
+        }
+
+        body.light-mode .filter-tab.priority-tag.low.active {
+            background: #0284c7 !important;
+            color: #ffffff !important;
+        }
+
+        body.light-mode .filter-tab.priority-tag.low.active:hover {
+            background: #0369a1 !important;
+            color: #ffffff !important;
+        }
+
+        .filter-tab.active,
+        .filter-tab.active:hover {
+            color: #ffffff !important;
+        }
+
+        body.light-mode .todo-undo {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+
+        body.light-mode .todo-undo:hover {
+            background-color: #e2e8f0;
+            color: #111827 !important;
+            border-color: #94a3b8;
+        }
+
+        body.light-mode .todo-edit-btn:hover {
+            background: #e2e8f0;
+            color: #111827 !important;
+            border-color: #cbd5e1;
+        }
+
+        body.light-mode .inline-cancel-btn:hover {
+            background: #e2e8f0;
+            color: #111827 !important;
+        }
+
+        body.light-mode .task-search-input,
+        body.light-mode .todo-input,
+        body.light-mode .todo-priority {
+            background: #ffffff !important;
+            border-color: #d1d5db !important;
+            color: #111827 !important;
+        }
+
+        body.light-mode .todo-item {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-left: 5px solid #2563eb !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+        }
+
+        body.light-mode .todo-item.priority-high {
+            border-left-color: #ef4444 !important;
+        }
+
+        body.light-mode .todo-item.priority-medium {
+            border-left-color: #f59e0b !important;
+        }
+
+        body.light-mode .todo-item.priority-low {
+            border-left-color: #2563eb !important;
+        }
+
+        body.light-mode .todo-item.completed-item {
+            border-left-color: #10b981 !important;
+        }
+
+        body.light-mode .todo-item:hover {
+            background: #f9fafb !important;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06) !important;
+        }
+
+        body.light-mode .todo-title {
+            color: #111827 !important;
+        }
+
+        body.light-mode .todo-empty {
+            background: #f9fafb !important;
+            border: 1px dashed #cbd5e1 !important;
+            color: #64748b !important;
+        }
+
+        body.light-mode .inline-edit-input,
+        body.light-mode .inline-edit-select {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #111827 !important;
+        }
+
         body {
-            font-family: 'Inter', sans-serif !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
             -webkit-text-size-adjust: 100%;
             text-size-adjust: 100%;
+            background-color: var(--bg-body);
             background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(135deg, #0f172a, #1e1b4b);
-            background-size: 40px 40px, 40px 40px, 100% 100%;
+                radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.1) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(16, 185, 129, 0.06) 0%, transparent 45%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
             background-attachment: fixed;
             margin: 0;
-            padding-top: 80px; /* Space for fixed navbar */
+            padding-top: 80px;
             box-sizing: border-box;
+            color: var(--text-primary);
+            min-height: 100vh;
         }
-        
+
         .dashboard-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
+            max-width: 1140px;
+            margin: 36px auto;
+            padding: 0 20px 60px 20px;
+            transition: filter 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, transform 0.3s ease;
         }
-        
+
+        /* Welcome Banner */
         .welcome-banner {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #4338ca 100%);
             color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 36px 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 30px -6px rgba(37, 99, 235, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
         .welcome-banner h1 {
-            margin: 0 0 10px 0;
-            font-size: 2.5em;
+            margin: 0 0 8px 0;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
         }
-        
+
         .welcome-banner p {
             margin: 0;
-            font-size: 1.2em;
-            opacity: 0.9;
+            font-size: 1.1rem;
+            opacity: 0.92;
+            color: #dbeafe;
         }
-        
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
-        
+
         .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-left: 5px solid #3b82f6;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            border-left: 4px solid var(--accent-blue);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
-        
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px -5px rgba(0, 0, 0, 0.5);
+        }
+
         .stat-card h3 {
-            margin: 0 0 10px 0;
-            color: #6b7280;
-            font-size: 1.1em;
+            margin: 0 0 12px 0;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }
-        
+
         .stat-card .value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #1f2937;
+            font-size: 2.2rem;
+            font-weight: 800;
             margin: 0;
+            letter-spacing: -0.02em;
         }
-        
-        /* To-Do List Styles */
-        .todo-section {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-top: 10px;
+
+        /* Progress Bar Widget */
+        .progress-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 22px 26px;
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            margin-bottom: 28px;
         }
-        
-        .todo-header {
-            font-size: 1.5em;
-            color: #1f2937;
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .progress-percentage {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--accent-emerald);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            background: #1e293b;
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #10b981);
+            border-radius: 999px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .progress-footer {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Heatmap Section */
+        .heatmap-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 26px;
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+            margin-bottom: 28px;
+        }
+
+        .heatmap-title {
             margin-top: 0;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 15px;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 14px;
         }
-        
+
+        .heatmap-scroll-wrapper {
+            overflow-x: auto;
+            padding-bottom: 12px;
+        }
+
+        .heatmap-scroll-wrapper::-webkit-scrollbar { height: 7px; }
+        .heatmap-scroll-wrapper::-webkit-scrollbar-track { background: #0f172a; border-radius: 4px; }
+        .heatmap-scroll-wrapper::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .heatmap-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .heatmap-grid {
+            display: flex;
+            gap: 4px;
+        }
+
+        .heatmap-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .heat-box {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            background-color: #1e293b;
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .heat-box:hover:not(.empty) {
+            transform: scale(1.25);
+            z-index: 10;
+        }
+
+        .heat-box.empty { background-color: transparent; }
+
+        /* Deep Blue to Magenta neon progression */
+        .heat-box.level-0 { background-color: #334155; }
+        .heat-box.level-1 { background-color: #0284c7; }
+        .heat-box.level-2 { background-color: #3b82f6; }
+        .heat-box.level-3 { background-color: #cf00d6; }
+        .heat-box.level-4 { background-color: #ff00ff; box-shadow: 0 0 12px rgba(255, 0, 255, 0.9); }
+
+        body:not(.light-mode) .heat-box.level-0 { background-color: #334155; }
+        body:not(.light-mode) .heat-box.level-1 { background-color: #0284c7; }
+        body:not(.light-mode) .heat-box.level-2 { background-color: #3b82f6; }
+        body:not(.light-mode) .heat-box.level-3 { background-color: #cf00d6; }
+        body:not(.light-mode) .heat-box.level-4 { background-color: #ff00ff; box-shadow: 0 0 12px rgba(255, 0, 255, 0.9); }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 16px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            justify-content: flex-end;
+            font-weight: 600;
+        }
+
+        /* To-Do Section */
+        .todo-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--card-border);
+        }
+
+        .todo-header {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 0;
+            margin-bottom: 22px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
         .todo-form {
             display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 24px;
         }
-        
+
         .todo-input {
             flex: 1;
-            padding: 15px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 14px 18px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 0.98rem;
+            color: var(--text-primary);
             outline: none;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.25s ease;
         }
-        
+
         .todo-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
         }
-        
+
+        .todo-priority {
+            padding: 14px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .todo-priority:focus {
+            border-color: var(--accent-blue);
+        }
+
         .todo-button {
-            background-color: #3b82f6;
+            background-color: var(--accent-blue);
             color: white;
             border: none;
-            padding: 15px 25px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 0.98rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
         }
-        
+
         .todo-button:hover {
-            background-color: #2563eb;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
         }
-        
+
+        /* Toolbar: Search & Segmented Filters */
+        .todo-toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 22px;
+            background: rgba(11, 17, 32, 0.6);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+
+        .search-box-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 20px;
+            pointer-events: none;
+        }
+
+        .task-search-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 40px 12px 42px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .task-search-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .clear-search-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clear-search-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .filter-tabs-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group {
+            display: inline-flex;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            gap: 4px;
+        }
+
+        .filter-tab {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-tab:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .filter-tab.active {
+            background: var(--accent-blue);
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+        }
+
+        .filter-tab.priority-tag.high.active {
+            background: var(--accent-rose);
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .filter-tab.priority-tag.medium.active {
+            background: var(--accent-amber);
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+        }
+
+        .filter-tab.priority-tag.low.active {
+            background: #0284c7;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+        }
+
+        /* Todo List */
         .todo-list {
             list-style: none;
             padding: 0;
             margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        
+
         .todo-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 18px 20px;
-            background-color: #f9fafb;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border-left: 5px solid #3b82f6;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            align-items: flex-start;
+            padding: 16px 20px;
+            background: var(--item-bg);
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+            border-left: 5px solid var(--accent-blue);
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
         }
-        
+
         .todo-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            background-color: #ffffff;
+            transform: translateX(3px);
+            background: var(--item-hover);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
         }
-        
+
+        .todo-item.priority-high { border-left-color: var(--accent-rose); }
+        .todo-item.priority-medium { border-left-color: var(--accent-amber); }
+        .todo-item.priority-low { border-left-color: #2563eb; }
+
+        .todo-item.completed-item {
+            border-left-color: var(--accent-emerald) !important;
+            opacity: 0.8;
+        }
+
+        .todo-main {
+            flex: 1;
+            min-width: 0;
+            margin-right: 16px;
+        }
+
+        .todo-title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
         .todo-title {
-            font-size: 1.1rem;
-            color: #374151;
-            font-weight: 500;
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            word-break: break-word;
+            line-height: 1.4;
         }
 
         .completed-task {
             text-decoration: line-through;
-            color: #9ca3af;
-        }
-        
-        .todo-delete {
-            background-color: #ef4444; /* Clean red color for delete */
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-        
-        .todo-delete:hover {
-            background-color: #dc2626;
-        }
-        
-        .todo-empty {
-            text-align: center;
-            color: #9ca3af;
-            font-style: italic;
-            padding: 30px;
-            background: #f9fafb;
-            border-radius: 8px;
-            border: 1px dashed #d1d5db;
+            color: var(--text-muted);
         }
 
-        .todo-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .todo-complete {
-            background-color: #10b981; /* Green color for complete */
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-        
-        .todo-complete:hover {
-            background-color: #059669;
-        }
-
-        /* Priority Styling */
-        .todo-priority {
-            padding: 15px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
         .priority-badge {
-            font-size: 0.65em;
-            padding: 4px 8px;
-            border-radius: 12px;
-            margin-right: 12px;
+            font-size: 0.68rem;
+            padding: 3px 8px;
+            border-radius: 999px;
             font-weight: 800;
             color: white;
-            display: inline-block;
-            vertical-align: middle;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            flex-shrink: 0;
         }
-        .priority-high .priority-badge { background-color: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
-        .priority-medium .priority-badge { background-color: #f59e0b; }
-        .priority-low .priority-badge { background-color: #3b82f6; }
-        
-        .todo-item.priority-high { border-left-color: #ef4444; }
-        .todo-item.priority-medium { border-left-color: #f59e0b; }
-        .todo-item.priority-low { border-left-color: #3b82f6; }
-        
-        /* Heatmap Styling - Cyberpunk Aesthetics */
-        .heatmap-container {
-            background: white;
-            padding: 30px;
+
+        .priority-high .priority-badge { background-color: var(--accent-rose); }
+        .priority-medium .priority-badge { background-color: var(--accent-amber); }
+        .priority-low .priority-badge { background-color: #0284c7; }
+
+        /* Timestamps on task */
+        .todo-timestamps {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+
+        .timestamp-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .timestamp-badge .material-symbols-outlined {
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .timestamp-completed {
+            color: var(--accent-emerald);
+            font-weight: 500;
+        }
+
+        /* Inline Edit Form */
+        .inline-edit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+            background: rgba(11, 17, 32, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+        }
+
+        .inline-edit-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .inline-edit-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .inline-edit-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .inline-edit-select {
+            padding: 8px 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .inline-save-btn {
+            background: var(--accent-emerald);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .inline-save-btn:hover {
+            background: #059669;
+        }
+
+        .inline-cancel-btn {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .inline-cancel-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Action Buttons */
+        .todo-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .todo-action-btn {
+            padding: 7px 14px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .todo-edit-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            border: 1px solid var(--card-border);
+            padding: 7px 10px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .todo-edit-btn:hover {
+            background: rgba(255, 255, 255, 0.16);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .todo-edit-btn .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        .todo-complete {
+            background-color: rgba(16, 185, 129, 0.18);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .todo-complete:hover {
+            background-color: var(--accent-emerald);
+            color: white;
+        }
+
+        .todo-undo {
+            background-color: rgba(148, 163, 184, 0.14);
+            color: var(--text-secondary);
+            border: 1px solid var(--card-border);
+        }
+
+        .todo-undo:hover {
+            background-color: rgba(148, 163, 184, 0.25);
+            color: white;
+        }
+
+        .todo-delete {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .todo-delete:hover {
+            background-color: var(--accent-rose);
+            color: white;
+        }
+
+        .todo-empty {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 36px 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 10px;
+            border: 1px dashed var(--card-border);
+        }
+
+        /* Floating Undo Toast */
+        .undo-toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 9999;
+            background: #0f172a;
+            border: 1px solid rgba(37, 99, 235, 0.4);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(37, 99, 235, 0.25);
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            animation: toastSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .heatmap-scroll-wrapper {
-            overflow-x: auto;
-            padding-bottom: 15px;
+
+        @keyframes toastSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-        /* Custom scrollbar for heatmap */
-        .heatmap-scroll-wrapper::-webkit-scrollbar { height: 8px; }
-        .heatmap-scroll-wrapper::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        .heatmap-scroll-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .heatmap-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .undo-toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .undo-icon {
+            color: #f87171;
+            font-size: 20px;
+        }
+
+        .undo-text {
+            font-size: 0.92rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .undo-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .undo-btn:hover {
+            background: var(--accent-blue-hover);
+        }
+
+        .undo-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .undo-close-btn:hover {
+            color: var(--text-primary);
+        }
 
         /* Responsive Mobile Styles */
         @media (max-width: 768px) {
             .dashboard-container {
-                width: 95%; /* Responsive width replacing fixed approaches */
-                padding: 0 10px;
+                width: 95%;
+                padding: 0 10px 40px 10px;
                 margin: 20px auto;
             }
             .welcome-banner {
-                padding: 20px;
+                padding: 24px 20px;
             }
             .welcome-banner h1 {
-                font-size: 1.8em;
+                font-size: 1.7rem;
             }
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            .stat-card {
-                padding: 15px;
-            }
             .todo-section {
-                padding: 15px;
-            }
-            .todo-header, .heatmap-title {
-                font-size: 1.3em;
+                padding: 18px;
             }
             .todo-form {
                 flex-direction: column;
@@ -305,105 +1051,36 @@
                 width: 100%;
                 box-sizing: border-box;
             }
-            .todo-item {
+            .filter-tabs-row {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+            .filter-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .filter-tab {
+                flex: 1;
+                text-align: center;
+                padding: 8px 4px;
+                font-size: 0.78rem;
+            }
+            .todo-item {
+                flex-direction: column;
                 gap: 12px;
-                padding: 15px;
+                padding: 14px;
+            }
+            .todo-main {
+                width: 100%;
+                margin-right: 0;
             }
             .todo-actions {
                 width: 100%;
                 justify-content: flex-end;
             }
             .heatmap-container {
-                padding: 15px;
+                padding: 16px;
             }
-        }
-
-        .heatmap-title {
-            margin-top: 0;
-            color: #1f2937;
-            font-size: 1.5em;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 15px;
-        }
-        .heatmap-grid {
-            display: flex;
-            gap: 4px;
-        }
-        .heatmap-col {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .heat-box {
-            width: 15px;
-            height: 15px;
-            border-radius: 4px;
-            background-color: #ebedf0;
-            position: relative;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .heat-box:hover:not(.empty) {
-            transform: scale(1.2);
-            z-index: 10;
-        }
-        .heat-box.empty { background-color: transparent; }
-        
-        /* Deep Blue to Magenta neon progression */
-        .heat-box.level-0 { background-color: #ebedf0; }
-        .heat-box.level-1 { background-color: #93c5fd; }
-        .heat-box.level-2 { background-color: #3b82f6; }
-        .heat-box.level-3 { background-color: #cf00d6; }
-        .heat-box.level-4 { background-color: #ff00ff; box-shadow: 0 0 10px rgba(255, 0, 255, 0.7); }
-
-        .heatmap-legend {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #6b7280;
-            justify-content: flex-end;
-            font-weight: bold;
-        }
-
-        /* Responsive Dark Mode Support */
-        body:not(.light-mode) .heatmap-container,
-        body:not(.light-mode) .stat-card,
-        body:not(.light-mode) .todo-section,
-        body:not(.light-mode) .todo-item {
-            background-color: #1e293b;
-            color: #f8fafc;
-        }
-        body:not(.light-mode) .todo-title,
-        body:not(.light-mode) .todo-header,
-        body:not(.light-mode) .heatmap-title,
-        body:not(.light-mode) .stat-card h3,
-        body:not(.light-mode) .stat-card .value {
-            color: #f8fafc;
-        }
-        body:not(.light-mode) .heatmap-title,
-        body:not(.light-mode) .todo-header {
-            border-color: #334155;
-        }
-        body:not(.light-mode) .heat-box.level-0 { background-color: #334155; }
-        body:not(.light-mode) .heat-box.level-1 { background-color: #0284c7; }
-        body:not(.light-mode) .heat-box.level-2 { background-color: #3b82f6; }
-        body:not(.light-mode) .heat-box.level-3 { background-color: #cf00d6; }
-        body:not(.light-mode) .heat-box.level-4 { background-color: #ff00ff; box-shadow: 0 0 12px rgba(255, 0, 255, 0.9); }
-        
-        body:not(.light-mode) .heatmap-scroll-wrapper::-webkit-scrollbar-track { background: #0f172a; }
-        body:not(.light-mode) .heatmap-scroll-wrapper::-webkit-scrollbar-thumb { background: #475569; }
-        body:not(.light-mode) .todo-input,
-        body:not(.light-mode) .todo-priority {
-            background-color: #0f172a;
-            border-color: #334155;
-            color: #f8fafc;
         }
     </style>
 </head>
@@ -416,27 +1093,48 @@
     
     <div class="dashboard-container">
         <div class="welcome-banner">
-            <h1>👋Welcome back, {{ user.username }}! </h1>
-            <p>Here's what's happening with your Life today.</p>
+            <h1>👋 Welcome back, {{ user.username }}!</h1>
+            <p>Here's what's happening with your productivity today.</p>
         </div>
         
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card" style="border-left-color: #10b981;">
                 <h3>Account Status</h3>
                 <p class="value" style="color: #10b981;">Active</p>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="border-left-color: #10b981;">
                 <h3>Completed Tasks</h3>
-                <p class="value" style="color: #cf00d6;">{{ total_completed }}</p>
+                <p class="value" id="statsCompleted" style="color: #10b981;">{{ total_completed }}</p>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="border-left-color: #3b82f6;">
                 <h3>Pending Tasks</h3>
-                <p class="value" style="color: #3b82f6;">{{ total_pending }}</p>
+                <p class="value" id="statsPending" style="color: #3b82f6;">{{ total_pending }}</p>
+            </div>
+        </div>
+
+        <!-- Task Completion Progress Widget -->
+        <div class="progress-card">
+            <div class="progress-header">
+                <div class="progress-title-wrapper">
+                    <span class="material-symbols-outlined" style="color: #10b981; font-size: 22px;">trending_up</span>
+                    <span>Task Completion Progress</span>
+                </div>
+                <span class="progress-percentage" id="progressPercentage">0%</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressBarFill" style="width: 0%;"></div>
+            </div>
+            <div class="progress-footer">
+                <span id="progressSubtitle">0 of 0 completed</span>
+                <span id="progressStatusBadge" style="font-weight: 600; color: #94a3b8;">Keep Going!</span>
             </div>
         </div>
         
         <div class="heatmap-container">
-            <h3 class="heatmap-title">🎯 Cyberpunk Contribution Heatmap</h3>
+            <h3 class="heatmap-title">
+                <span class="material-symbols-outlined" style="color: #3b82f6;">calendar_month</span>
+                Productivity Activity Heatmap
+            </h3>
             <div class="heatmap-scroll-wrapper">
                 <div id="heatmap" class="heatmap-grid"></div>
             </div>
@@ -452,52 +1150,140 @@
         </div>
         
         <div class="todo-section">
-            <h2 class="todo-header">My To-Do List</h2>
+            <h2 class="todo-header">
+                <span style="display: inline-flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-outlined" style="color: #3b82f6;">checklist</span>
+                    My To-Do Tasks
+                </span>
+            </h2>
+
             <form class="todo-form" method="POST">
                 {% csrf_token %}
-                <input type="text" class="todo-input" name="title" placeholder="What needs to be done?" required>
+                <input type="text" class="todo-input" name="title" placeholder="What needs to be accomplished?" required autocomplete="off">
                 <select name="priority" class="todo-priority" title="Task Priority" aria-label="Task Priority">
                     <option value="High">🔴 High Priority</option>
                     <option value="Medium">🟠 Medium</option>
                     <option value="Low" selected>🔵 Routine</option>
                 </select>
-                <button type="submit" class="todo-button">Add Task</button>
+                <button type="submit" class="todo-button">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">add_circle</span>
+                    Add Task
+                </button>
             </form>
+
+            <!-- Search and Filter Toolbar -->
+            <div class="todo-toolbar">
+                <div class="search-box-wrapper">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input type="text" id="taskSearchInput" class="task-search-input" placeholder="Search tasks by title..." autocomplete="off">
+                    <button type="button" id="clearSearchBtn" class="clear-search-btn" style="display: none;">&times;</button>
+                </div>
+                <div class="filter-tabs-row">
+                    <div class="filter-group" id="statusFilterGroup">
+                        <button type="button" class="filter-tab active" data-filter="status" data-value="all">All</button>
+                        <button type="button" class="filter-tab" data-filter="status" data-value="pending">Pending</button>
+                        <button type="button" class="filter-tab" data-filter="status" data-value="completed">Completed</button>
+                    </div>
+                    <div class="filter-group" id="priorityFilterGroup">
+                        <button type="button" class="filter-tab active" data-filter="priority" data-value="all">All Priorities</button>
+                        <button type="button" class="filter-tab priority-tag high" data-filter="priority" data-value="high">High</button>
+                        <button type="button" class="filter-tab priority-tag medium" data-filter="priority" data-value="medium">Medium</button>
+                        <button type="button" class="filter-tab priority-tag low" data-filter="priority" data-value="low">Routine</button>
+                    </div>
+                </div>
+            </div>
             
-            <ul class="todo-list">
+            <ul class="todo-list" id="todoList">
                 {% for task in tasks %}
-                <li class="todo-item priority-{{ task.priority|lower }}">
-                    <span class="todo-title {% if task.completed %}completed-task{% endif %}">
-                        <span class="priority-badge">{{ task.priority }}</span>
-                        {{ task.title }}
-                    </span>
+                <li class="todo-item priority-{{ task.priority|lower }} {% if task.completed %}completed-item{% endif %}" 
+                    data-id="{{ task.id }}" 
+                    data-status="{% if task.completed %}completed{% else %}pending{% endif %}" 
+                    data-priority="{{ task.priority|lower }}" 
+                    data-title="{{ task.title|lower }}">
+                    
+                    <div class="todo-main">
+                        <div class="todo-title-row">
+                            <span class="priority-badge">{{ task.priority }}</span>
+                            <span class="todo-title {% if task.completed %}completed-task{% endif %}">{{ task.title }}</span>
+                        </div>
+                        
+                        <div class="todo-timestamps">
+                            <span class="timestamp-badge timestamp-created" title="{{ task.created_at|date:'r' }}">
+                                <span class="material-symbols-outlined">schedule</span>
+                                Created: {{ task.created_at|date:"M d, Y h:i A" }}
+                            </span>
+                            {% if task.completed and task.completed_at %}
+                            <span class="timestamp-badge timestamp-completed" title="{{ task.completed_at|date:'r' }}">
+                                <span class="material-symbols-outlined">task_alt</span>
+                                Completed: {{ task.completed_at|date:"M d, Y h:i A" }}
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Inline Edit Form -->
+                        <form class="inline-edit-form" method="POST" action="{% url 'edit_task' task.id %}" style="display: none;">
+                            {% csrf_token %}
+                            <input type="text" name="title" class="inline-edit-input" value="{{ task.title }}" required>
+                            <div class="inline-edit-controls">
+                                <select name="priority" class="inline-edit-select" title="Edit priority">
+                                    <option value="High" {% if task.priority == 'High' %}selected{% endif %}>🔴 High</option>
+                                    <option value="Medium" {% if task.priority == 'Medium' %}selected{% endif %}>🟠 Medium</option>
+                                    <option value="Low" {% if task.priority == 'Low' %}selected{% endif %}>🔵 Routine</option>
+                                </select>
+                                <button type="submit" class="inline-save-btn">Save</button>
+                                <button type="button" class="inline-cancel-btn">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                    
                     <div class="todo-actions">
-                        <button class="todo-complete ajax-btn" data-url="{% url 'complete_task' task.id %}">{% if task.completed %}Undo{% else %}Complete{% endif %}</button>
-                        <button class="todo-delete ajax-btn" data-url="{% url 'delete_task' task.id %}">Delete</button>
+                        <button type="button" class="todo-edit-btn" title="Edit task" aria-label="Edit task">
+                            <span class="material-symbols-outlined">edit</span>
+                        </button>
+                        <button type="button" class="todo-action-btn {% if task.completed %}todo-undo{% else %}todo-complete{% endif %} ajax-complete-btn" 
+                                data-url="{% url 'complete_task' task.id %}" 
+                                data-completed="{% if task.completed %}true{% else %}false{% endif %}">
+                            {% if task.completed %}Undo{% else %}Complete{% endif %}
+                        </button>
+                        <button type="button" class="todo-action-btn todo-delete ajax-delete-btn" 
+                                data-url="{% url 'delete_task' task.id %}" 
+                                data-undo-url="{% url 'undo_delete_task' task.id %}" 
+                                data-title="{{ task.title }}">
+                            Delete
+                        </button>
                     </div>
                 </li>
                 {% empty %}
-                <li class="todo-empty">No tasks yet. Enjoy your free time!</li>
+                <li class="todo-empty" id="emptyNotice">No tasks found. Enjoy your day or add a new task above!</li>
                 {% endfor %}
             </ul>
         </div>
     </div>
+
+    <!-- Floating Undo Toast Banner -->
+    <div id="undoToast" class="undo-toast" style="display: none;">
+        <div class="undo-toast-content">
+            <span class="material-symbols-outlined undo-icon">delete</span>
+            <span id="undoToastMsg" class="undo-text">Task deleted.</span>
+            <button type="button" id="undoToastBtn" class="undo-btn">Undo (<span id="undoCountdown">5</span>s)</button>
+            <button type="button" id="undoCloseBtn" class="undo-close-btn">&times;</button>
+        </div>
+    </div>
     
     <script>
+        // Heatmap renderer
         function parseAndRenderHeatmap(rawHeatmap) {
             const heatmapEl = document.getElementById('heatmap');
             if(!heatmapEl) return;
             
-            // Build the grid
             const weeks = 53; 
-            
             let today = new Date();
             today.setHours(0,0,0,0);
             let current = new Date(today);
             current.setDate(today.getDate() - (weeks * 7) + 1);
 
             let html = '';
-            let monthsHtml = '<div style="position: relative; height: 20px; margin-top: 5px; min-width: ' + (weeks * 19) + 'px;">';
+            let monthsHtml = '<div style="position: relative; height: 20px; margin-top: 5px; min-width: ' + (weeks * 18) + 'px;">';
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             let lastMonth = current.getMonth();
 
@@ -506,8 +1292,8 @@
                 
                 let colMonth = current.getMonth();
                 if (colMonth !== lastMonth) {
-                    let leftOffset = w * 19;
-                    monthsHtml += `<span style="position: absolute; left: ${leftOffset}px; font-size: 0.8rem; color: #6b7280; font-weight: bold;">${monthNames[colMonth]}</span>`;
+                    let leftOffset = w * 18;
+                    monthsHtml += `<span style="position: absolute; left: ${leftOffset}px; font-size: 0.78rem; color: #94a3b8; font-weight: bold;">${monthNames[colMonth]}</span>`;
                     lastMonth = colMonth;
                 }
 
@@ -535,7 +1321,6 @@
             monthsHtml += '</div>';
             heatmapEl.innerHTML = html;
             
-            // Clean up any old injected month html rows before appending a new one
             const oldRow = heatmapEl.nextElementSibling;
             if (oldRow && oldRow.style.position === 'relative') { oldRow.remove(); }
             heatmapEl.insertAdjacentHTML('afterend', monthsHtml);
@@ -544,8 +1329,136 @@
             if(wrapper) wrapper.scrollLeft = wrapper.scrollWidth;
         }
 
+        // Calculate and update progress bar
+        function updateProgressBar() {
+            const items = document.querySelectorAll('.todo-list .todo-item');
+            const total = items.length;
+            let completedCount = 0;
+            items.forEach(item => {
+                if (item.getAttribute('data-status') === 'completed') {
+                    completedCount++;
+                }
+            });
+
+            const percent = total === 0 ? 0 : Math.round((completedCount / total) * 100);
+            
+            const percentEl = document.getElementById('progressPercentage');
+            const fillEl = document.getElementById('progressBarFill');
+            const subtitleEl = document.getElementById('progressSubtitle');
+            const badgeEl = document.getElementById('progressStatusBadge');
+
+            if (percentEl) percentEl.textContent = `${percent}%`;
+            if (fillEl) fillEl.style.width = `${percent}%`;
+            if (subtitleEl) subtitleEl.textContent = `${completedCount} of ${total} tasks completed`;
+            
+            if (badgeEl) {
+                if (total === 0) {
+                    badgeEl.textContent = "No tasks yet";
+                    badgeEl.style.color = "#94a3b8";
+                } else if (percent === 100) {
+                    badgeEl.textContent = "All Done! 🎉";
+                    badgeEl.style.color = "#10b981";
+                } else if (percent >= 50) {
+                    badgeEl.textContent = "More than halfway there! 🚀";
+                    badgeEl.style.color = "#3b82f6";
+                } else {
+                    badgeEl.textContent = "Keep going! 💪";
+                    badgeEl.style.color = "#94a3b8";
+                }
+            }
+        }
+
+        // Live Search & Tab Filtering
+        let currentStatusFilter = 'all';
+        let currentPriorityFilter = 'all';
+        let currentSearchQuery = '';
+
+        function applyFilters() {
+            const items = document.querySelectorAll('.todo-list .todo-item');
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                const status = item.getAttribute('data-status') || 'pending';
+                const priority = item.getAttribute('data-priority') || 'low';
+                const title = item.getAttribute('data-title') || '';
+
+                const matchesStatus = (currentStatusFilter === 'all') || (status === currentStatusFilter);
+                const matchesPriority = (currentPriorityFilter === 'all') || (priority === currentPriorityFilter);
+                const matchesSearch = (!currentSearchQuery) || title.includes(currentSearchQuery);
+
+                if (matchesStatus && matchesPriority && matchesSearch) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Show or hide empty message
+            let emptyEl = document.getElementById('filteredEmptyNotice');
+            const list = document.getElementById('todoList');
+            if (visibleCount === 0 && items.length > 0) {
+                if (!emptyEl) {
+                    emptyEl = document.createElement('li');
+                    emptyEl.id = 'filteredEmptyNotice';
+                    emptyEl.className = 'todo-empty';
+                    emptyEl.textContent = 'No tasks match your search or filter criteria.';
+                    list.appendChild(emptyEl);
+                }
+                emptyEl.style.display = 'block';
+            } else if (emptyEl) {
+                emptyEl.style.display = 'none';
+            }
+        }
+
+        // Undo Delete Banner Management
+        let undoTimer = null;
+        let undoCountdownInterval = null;
+        let pendingUndoUrl = null;
+
+        function showUndoToast(undoUrl, taskTitle) {
+            const toast = document.getElementById('undoToast');
+            const msg = document.getElementById('undoToastMsg');
+            const countEl = document.getElementById('undoCountdown');
+            if (!toast) return;
+
+            // Clear previous timers
+            clearTimeout(undoTimer);
+            clearInterval(undoCountdownInterval);
+
+            pendingUndoUrl = undoUrl;
+            msg.textContent = `Deleted "${taskTitle.length > 25 ? taskTitle.slice(0, 22) + '...' : taskTitle}"`;
+            let remaining = 5;
+            countEl.textContent = remaining;
+
+            toast.style.display = 'flex';
+
+            undoCountdownInterval = setInterval(() => {
+                remaining--;
+                if (remaining > 0) {
+                    countEl.textContent = remaining;
+                } else {
+                    clearInterval(undoCountdownInterval);
+                }
+            }, 1000);
+
+            undoTimer = setTimeout(() => {
+                toast.style.display = 'none';
+                pendingUndoUrl = null;
+            }, 5000);
+        }
+
+        function hideUndoToast() {
+            const toast = document.getElementById('undoToast');
+            if (toast) toast.style.display = 'none';
+            clearTimeout(undoTimer);
+            clearInterval(undoCountdownInterval);
+            pendingUndoUrl = null;
+        }
+
+        // Wire Action Handlers
         function attachSmoothActions() {
-            // Form Add
+            // Add Task Form
             const form = document.querySelector('.todo-form');
             if (form && !form.hasAttribute('data-ajax-bound')) {
                 form.setAttribute('data-ajax-bound', 'true');
@@ -560,61 +1473,199 @@
                     this.reset();
                 });
             }
-            // Complete & Delete Buttons
-            document.querySelectorAll('.ajax-btn').forEach(btn => {
+
+            // Complete buttons
+            document.querySelectorAll('.ajax-complete-btn').forEach(btn => {
                 if (!btn.hasAttribute('data-ajax-bound')) {
                     btn.setAttribute('data-ajax-bound', 'true');
                     btn.addEventListener('click', async function() {
                         const url = this.getAttribute('data-url');
+                        const isCompleted = this.getAttribute('data-completed') === 'true';
+                        
+                        // Fire celebration confetti if turning from pending to completed!
+                        if (!isCompleted && typeof confetti === 'function') {
+                            confetti({
+                                particleCount: 80,
+                                spread: 70,
+                                origin: { y: 0.65 },
+                                colors: ['#2563eb', '#10b981', '#60a5fa', '#34d399', '#ffffff']
+                            });
+                        }
+
                         await executeSmoothUpdate(url, { method: 'GET' });
                     });
                 }
             });
+
+            // Delete buttons with Undo Toast
+            document.querySelectorAll('.ajax-delete-btn').forEach(btn => {
+                if (!btn.hasAttribute('data-ajax-bound')) {
+                    btn.setAttribute('data-ajax-bound', 'true');
+                    btn.addEventListener('click', async function() {
+                        const url = this.getAttribute('data-url');
+                        const undoUrl = this.getAttribute('data-undo-url');
+                        const title = this.getAttribute('data-title') || 'Task';
+                        
+                        await executeSmoothUpdate(url, { method: 'GET' });
+                        showUndoToast(undoUrl, title);
+                    });
+                }
+            });
+
+            // Inline Edit Form toggles
+            document.querySelectorAll('.todo-item').forEach(item => {
+                const editBtn = item.querySelector('.todo-edit-btn');
+                const form = item.querySelector('.inline-edit-form');
+                const cancelBtn = item.querySelector('.inline-cancel-btn');
+                const titleRow = item.querySelector('.todo-title-row');
+                const timestamps = item.querySelector('.todo-timestamps');
+
+                if (editBtn && form && !editBtn.hasAttribute('data-bound')) {
+                    editBtn.setAttribute('data-bound', 'true');
+                    editBtn.addEventListener('click', () => {
+                        const isHidden = form.style.display === 'none';
+                        form.style.display = isHidden ? 'flex' : 'none';
+                        if (titleRow) titleRow.style.display = isHidden ? 'none' : 'flex';
+                        if (timestamps) timestamps.style.display = isHidden ? 'none' : 'flex';
+                        if (isHidden) {
+                            const input = form.querySelector('.inline-edit-input');
+                            if (input) input.focus();
+                        }
+                    });
+                }
+
+                if (cancelBtn && form && !cancelBtn.hasAttribute('data-bound')) {
+                    cancelBtn.setAttribute('data-bound', 'true');
+                    cancelBtn.addEventListener('click', () => {
+                        form.style.display = 'none';
+                        if (titleRow) titleRow.style.display = 'flex';
+                        if (timestamps) timestamps.style.display = 'flex';
+                    });
+                }
+
+                if (form && !form.hasAttribute('data-ajax-bound')) {
+                    form.setAttribute('data-ajax-bound', 'true');
+                    form.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        const formData = new FormData(this);
+                        await executeSmoothUpdate(this.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {'X-CSRFToken': formData.get('csrfmiddlewaretoken')}
+                        });
+                    });
+                }
+            });
+
+            // Update dynamic widgets
+            updateProgressBar();
+            applyFilters();
         }
 
+        // Smooth SPA updater
         async function executeSmoothUpdate(url, options) {
             const dash = document.querySelector('.dashboard-container');
-            // Animate out dynamically
-            dash.style.transition = 'filter 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, transform 0.4s ease';
             dash.style.filter = 'blur(4px)';
-            dash.style.opacity = '0.5';
-            dash.style.transform = 'scale(0.98)';
+            dash.style.opacity = '0.6';
+            dash.style.transform = 'scale(0.99)';
 
             try {
                 let res = await fetch(url, options);
                 let html = await res.text();
                 let doc = new DOMParser().parseFromString(html, "text/html");
                 
-                // Diff the DOM blocks directly
-                const elementsToSwap = ['.stats-grid', '.todo-list'];
-                elementsToSwap.forEach(selector => {
-                    const newEl = doc.querySelector(selector);
-                    if (newEl) document.querySelector(selector).innerHTML = newEl.innerHTML;
-                });
+                // Swap stats grid and todo list
+                const stats = doc.querySelector('.stats-grid');
+                if (stats) document.querySelector('.stats-grid').innerHTML = stats.innerHTML;
+
+                const list = doc.querySelector('.todo-list');
+                if (list) document.querySelector('.todo-list').innerHTML = list.innerHTML;
                 
-                // Hot swap the heatmap payload internally
+                // Hot swap heatmap data
                 let hiddenJson = doc.getElementById('heatmap-json-data');
                 if (hiddenJson) {
                     parseAndRenderHeatmap(JSON.parse(hiddenJson.textContent || "{}"));
                 }
                 
-                // Wire up actions to the new DOM nodes
                 attachSmoothActions();
-            } catch(e) { console.error('SPA Update Error:', e); }
+            } catch(e) {
+                console.error('SPA Update Error:', e);
+            }
 
-            // Pull back into focus
             setTimeout(() => {
                 dash.style.filter = 'blur(0px)';
                 dash.style.opacity = '1';
                 dash.style.transform = 'scale(1)';
-            }, 100);
+            }, 80);
         }
 
+        // Global Event Listeners Setup
         document.addEventListener('DOMContentLoaded', () => {
+            // Initial heatmap
             const initialJson = document.getElementById('heatmap-json-data');
             if (initialJson) {
                 parseAndRenderHeatmap(JSON.parse(initialJson.textContent || "{}"));
             }
+
+            // Search input listener
+            const searchInput = document.getElementById('taskSearchInput');
+            const clearBtn = document.getElementById('clearSearchBtn');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    currentSearchQuery = e.target.value.toLowerCase().trim();
+                    if (clearBtn) clearBtn.style.display = currentSearchQuery ? 'block' : 'none';
+                    applyFilters();
+                });
+            }
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    if (searchInput) searchInput.value = '';
+                    currentSearchQuery = '';
+                    clearBtn.style.display = 'none';
+                    applyFilters();
+                });
+            }
+
+            // Filter Tabs listeners
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const filterType = this.getAttribute('data-filter');
+                    const value = this.getAttribute('data-value');
+                    
+                    // Toggle active class in group
+                    const group = this.closest('.filter-group');
+                    group.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    if (filterType === 'status') {
+                        currentStatusFilter = value;
+                    } else if (filterType === 'priority') {
+                        currentPriorityFilter = value;
+                    }
+                    applyFilters();
+                });
+            });
+
+            // Undo Toast Action Buttons
+            const undoToastBtn = document.getElementById('undoToastBtn');
+            const undoCloseBtn = document.getElementById('undoCloseBtn');
+
+            if (undoToastBtn) {
+                undoToastBtn.addEventListener('click', async () => {
+                    if (pendingUndoUrl) {
+                        const url = pendingUndoUrl;
+                        hideUndoToast();
+                        await executeSmoothUpdate(url, { method: 'GET' });
+                    }
+                });
+            }
+
+            if (undoCloseBtn) {
+                undoCloseBtn.addEventListener('click', hideUndoToast);
+            }
+
             attachSmoothActions();
         });
     </script>

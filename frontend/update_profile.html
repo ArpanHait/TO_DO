@@ -4,24 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Profile - TO_DO</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
-    <link rel="icon" type="image/png" href="favicon.png?v=2">
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=2">
+    <link rel="icon" type="image/png" href="favicon.png?v=3">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=3">
+    <link rel="apple-touch-icon" href="favicon.png?v=3">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
     <script src="app.js"></script>
     <style>
+        :root {
+            --bg-main: #0b0f19;
+            --grid-line: rgba(0, 255, 255, 0.08);
+            --glow-center: rgba(255, 0, 255, 0.15);
+            --container-bg: rgba(15, 23, 42, 0.85);
+            --container-border: rgba(255, 255, 255, 0.08);
+            --container-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --input-bg: rgba(11, 15, 25, 0.6);
+            --input-border: rgba(255, 255, 255, 0.12);
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.35);
+            --btn-grad-start: #2563eb;
+            --btn-grad-end: #4f46e5;
+        }
+
+        body.light-mode {
+            --bg-main: #f0f4f8;
+            --grid-line: rgba(0, 0, 0, 0.04);
+            --glow-center: rgba(0, 0, 255, 0.05);
+            --container-bg: rgba(255, 255, 255, 0.9);
+            --container-border: rgba(226, 232, 240, 0.9);
+            --container-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --input-bg: #ffffff;
+            --input-border: #cbd5e1;
+            --accent: #2563eb;
+            --accent-glow: rgba(37, 99, 235, 0.2);
+            --btn-grad-start: #2563eb;
+            --btn-grad-end: #3b82f6;
+        }
+
         body {
             font-family: 'Inter', sans-serif !important;
             -webkit-text-size-adjust: 100%;
             text-size-adjust: 100%;
-            background-color: #0b0f19;
+            background-color: var(--bg-main);
             background-image: 
-                radial-gradient(circle at 50% 50%, rgba(255, 0, 255, 0.15) 0%, transparent 50%),
-                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
-            background-position: center, center, center;
+                radial-gradient(circle at center, var(--glow-center), transparent 60%),
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            background-position: center;
+            background-attachment: fixed;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -30,7 +66,8 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            color: #e2e8f0;
+            color: var(--text-primary);
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
         /* Server Health Pulse LED Badge */
@@ -40,7 +77,7 @@
             align-items: center;
             margin-bottom: 16px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             position: relative;
             z-index: 10;
         }
@@ -57,7 +94,7 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.35s ease;
             cursor: default;
             user-select: none;
         }
@@ -67,7 +104,6 @@
             height: 9px;
             border-radius: 50%;
             display: inline-block;
-            position: relative;
             flex-shrink: 0;
         }
 
@@ -91,7 +127,7 @@
         .server-status-badge.status-checking .pulse-dot,
         .server-status-badge.status-waking .pulse-dot {
             background-color: #f59e0b;
-            box-shadow: 0 0 10px #f59e0b, 0 0 18px #f59e0b;
+            box-shadow: 0 0 10px #f59e0b;
             animation: pulse-amber 1.5s infinite ease-in-out;
         }
 
@@ -102,14 +138,8 @@
         }
         .server-status-badge.status-offline .pulse-dot {
             background-color: #ef4444;
-            box-shadow: 0 0 10px #ef4444, 0 0 18px #ef4444;
+            box-shadow: 0 0 10px #ef4444;
             animation: pulse-red 1.5s infinite ease-in-out;
-        }
-
-        .ping-text {
-            font-size: 0.74rem;
-            opacity: 0.8;
-            margin-left: 2px;
         }
 
         @keyframes pulse-green {
@@ -130,141 +160,234 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
+        .ping-text {
+            font-size: 0.74rem;
+            opacity: 0.8;
+            margin-left: 2px;
+        }
+
         .update-container {
-            background: rgba(11, 15, 25, 0.6);
+            background: var(--container-bg);
             -webkit-backdrop-filter: blur(16px);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), inset 0 0 10px rgba(255, 0, 255, 0.05);
+            border: 1px solid var(--container-border);
+            box-shadow: var(--container-shadow);
             padding: 40px;
-            border-radius: 12px;
+            border-radius: 16px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             box-sizing: border-box;
             text-align: center;
             position: relative;
             z-index: 1;
         }
+
         .update-container h2 {
-            color: #00ffff;
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
             margin-top: 0;
             margin-bottom: 24px;
         }
+
+        /* Avatar Container & Live Preview */
+        .avatar-preview-wrapper {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 20px auto;
+        }
+
+        .current-photo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+            transition: transform 0.3s ease;
+            display: block;
+        }
+
+        .avatar-initial-fallback {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(37, 99, 235, 0.15);
+            color: #60a5fa;
+            font-size: 3.2rem;
+            font-weight: 800;
+            border: 3px solid var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .preview-badge {
+            position: absolute;
+            bottom: -4px;
+            right: 4px;
+            background: #10b981;
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 999px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.6); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
         .update-container form {
             display: flex;
             flex-direction: column;
+            gap: 14px;
         }
+
+        .file-input-wrapper {
+            position: relative;
+            text-align: left;
+        }
+
+        .file-input-label {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
         .update-container input[type="file"] {
             padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            border-radius: 4px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background-color: rgba(0, 0, 0, 0.3);
-            color: #e2e8f0;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+            background-color: var(--input-bg);
+            color: var(--text-primary);
             cursor: pointer;
             box-sizing: border-box;
             width: 100%;
         }
+
         .update-container input[type="file"]:focus {
-            border-color: #00ffff;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
             outline: none;
         }
+
+        /* Animated Upload Progress Bar */
+        .upload-progress-wrapper {
+            margin: 4px 0;
+            text-align: left;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: #1e293b;
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #2563eb, #10b981);
+            border-radius: 999px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .upload-status-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
         .update-container button[type="submit"] {
-            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            background: linear-gradient(135deg, var(--btn-grad-start), var(--btn-grad-end));
             color: white;
-            padding: 12px;
+            padding: 13px;
             border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 12px;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .update-container button[type="submit"]:hover {
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
-            transform: translateY(-2px);
+
+        .update-container button[type="submit"]:hover:not(:disabled) {
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+            transform: translateY(-1px);
         }
+
+        .update-container button[type="submit"]:disabled {
+            opacity: 0.75;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         .update-container a.cancel-btn {
             display: inline-block;
             background: rgba(255, 255, 255, 0.05);
-            color: #94a3b8;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid var(--container-border);
             padding: 12px;
-            border-radius: 4px;
+            border-radius: 8px;
             text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.92rem;
+            transition: all 0.2s ease;
         }
+
         .update-container a.cancel-btn:hover {
             background: rgba(255, 255, 255, 0.1);
             color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-        .current-photo {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 20px auto;
-            border: 2px solid #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
         }
 
-        /* Theme Overrides */
-        :root {
-            --bg-main: #0b0f19;
-            --grid-line: rgba(0, 255, 255, 0.08);
-            --glow-center: rgba(255, 0, 255, 0.15);
-            --container-bg: rgba(20, 25, 40, 0.85);
-            --container-border: rgba(0, 255, 255, 0.2);
-            --container-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 255, 255, 0.1);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --input-bg: rgba(0, 0, 0, 0.3);
-            --input-border: rgba(255, 255, 255, 0.1);
-            --accent: #00ffff;
-            --accent-glow: rgba(0, 255, 255, 0.3);
-            --btn-grad-start: #0ea5e9;
-            --btn-grad-end: #6366f1;
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-size: 0.88rem;
+            text-align: center;
         }
-
-        body.light-mode {
-            --bg-main: #f0f4f8;
-            --grid-line: rgba(0, 0, 0, 0.04);
-            --glow-center: rgba(0, 0, 255, 0.05);
-            --container-bg: rgba(255, 255, 255, 0.85);
-            --container-border: rgba(0, 0, 0, 0.1);
-            --container-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.05);
-            --text-primary: #1e293b;
-            --text-secondary: #475569;
-            --input-bg: rgba(255, 255, 255, 0.8);
-            --input-border: rgba(0, 0, 0, 0.2);
-            --accent: #0284c7;
-            --accent-glow: rgba(2, 132, 199, 0.3);
-            --btn-grad-start: #3b82f6;
-            --btn-grad-end: #8b5cf6;
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
         }
-
-        .themed-container {
-            background: var(--container-bg) !important;
-            border: 1px solid var(--container-border) !important;
-            box-shadow: var(--container-shadow) !important;
-            color: var(--text-primary) !important;
-        }
-        .themed-container h2 { color: var(--text-primary) !important; }
-        .themed-container input:focus {
-            border-color: var(--accent) !important;
-            box-shadow: 0 0 8px var(--accent-glow) !important;
-        }
-        .themed-container button {
-            background: linear-gradient(135deg, var(--btn-grad-start), var(--btn-grad-end)) !important;
-        }
-        .themed-container a { color: var(--accent) !important; }
 
         #tsparticles {
             position: fixed;
@@ -287,39 +410,23 @@
             border: 1px solid var(--container-border);
             color: var(--text-primary);
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            width: 44px;
+            height: 44px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
             box-shadow: var(--container-shadow);
             transition: all 0.3s ease;
-        }
-        #theme-toggle-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .alert {
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-            border-radius: 6px;
-            text-align: center;
-            font-size: 0.95rem;
-        }
-        .alert-error {
-            color: #fb7185;
-            background-color: rgba(251, 113, 133, 0.1);
-            border-color: rgba(251, 113, 133, 0.2);
         }
     </style>
 </head>
 <body>
     <div id="tsparticles"></div>
+
     <div class="theme-switch-wrapper">
-        <button id="theme-toggle-btn" title="Toggle Day/Night Mode">🌙</button>
+        <button id="theme-toggle-btn" title="Toggle Light/Dark Theme">🌙</button>
     </div>
 
     <!-- Top-Middle Pulse LED Backend Status -->
@@ -331,20 +438,113 @@
         </div>
     </div>
 
-    <!-- Container -->
-    <div class="update-container themed-container">
+    <div class="update-container">
         <h2>Update Profile Photo</h2>
-        <div id="photoPlaceholder"></div>
+
         <div id="alertBox"></div>
+        
+        <!-- Live Avatar Preview Circle -->
+        <div class="avatar-preview-wrapper" id="avatarPreviewWrapper">
+            <img id="avatarImg" src="" alt="Current Photo" class="current-photo" style="display: none;">
+            <div id="avatarFallback" class="avatar-initial-fallback">U</div>
+            <span id="newPreviewBadge" class="preview-badge" style="display: none;">New Preview</span>
+        </div>
+        
         <form id="profileForm">
-            <input type="file" id="imageInput" accept="image/*" title="Choose a new profile photo" aria-label="Choose a new profile photo" required>
-            <button type="submit" id="submitBtn">Upload Photo</button>
+            <div class="file-input-wrapper">
+                <label for="imageInput" class="file-input-label">Select a new image from your device</label>
+                <input type="file" id="imageInput" name="image" accept="image/*" title="Choose a new profile photo" aria-label="Choose a new profile photo" required>
+            </div>
+
+            <!-- Upload Progress Bar (shown on submit) -->
+            <div id="uploadProgressWrapper" class="upload-progress-wrapper" style="display: none;">
+                <div class="progress-track">
+                    <div id="progressFillBar" class="progress-fill-bar"></div>
+                </div>
+                <div class="upload-status-text">
+                    <span id="uploadStatusLabel">Compressing & Uploading...</span>
+                    <span id="uploadPercentLabel">0%</span>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn">
+                <span class="material-symbols-outlined" style="font-size: 20px;">cloud_upload</span>
+                <span>Upload Photo</span>
+            </button>
             <a href="dashboard.html" class="cancel-btn">Cancel</a>
         </form>
     </div>
 
     <script>
-        // Check Auth immediately
+        const imageInput = document.getElementById('imageInput');
+        const avatarImg = document.getElementById('avatarImg');
+        const avatarFallback = document.getElementById('avatarFallback');
+        const newPreviewBadge = document.getElementById('newPreviewBadge');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressWrapper = document.getElementById('uploadProgressWrapper');
+        const progressFill = document.getElementById('progressFillBar');
+        const percentLabel = document.getElementById('uploadPercentLabel');
+        const statusLabel = document.getElementById('uploadStatusLabel');
+
+        // Instant Live Preview on image selection
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const objectUrl = URL.createObjectURL(file);
+                avatarImg.src = objectUrl;
+                avatarImg.style.display = 'block';
+                if (avatarFallback) avatarFallback.style.display = 'none';
+                newPreviewBadge.style.display = 'inline-block';
+            }
+        });
+
+        // Fast Client-Side Image Compression using Canvas
+        async function compressImageFile(file, maxDimension = 500, quality = 0.85) {
+            return new Promise((resolve) => {
+                if (file.size < 250 * 1024) {
+                    resolve(file);
+                    return;
+                }
+
+                const img = new Image();
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxDimension || height > maxDimension) {
+                        if (width > height) {
+                            height = Math.round((height * maxDimension) / width);
+                            width = maxDimension;
+                        } else {
+                            width = Math.round((width * maxDimension) / height);
+                            height = maxDimension;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        if (!blob) {
+                            resolve(file);
+                            return;
+                        }
+                        const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        });
+                        resolve(compressedFile);
+                    }, 'image/jpeg', quality);
+                };
+                img.onerror = () => resolve(file);
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        // Initialize User state
         configPromise.then(() => {
             const token = getToken();
             const userObj = getUser();
@@ -353,39 +553,50 @@
                 return;
             }
 
-            // Render current photo
-            const placeholder = document.getElementById('photoPlaceholder');
             const initial = (userObj.username || 'U')[0].toUpperCase();
+            avatarFallback.textContent = initial;
+
             if (userObj.image_url) {
-                placeholder.innerHTML = `<img src="${getAvatarUrl(userObj.image_url)}" alt="Current Photo" class="current-photo" onerror="this.outerHTML='<div class=\\'current-photo\\' style=\\'display: flex; justify-content: center; align-items: center; background: rgba(0, 255, 255, 0.1); color: #00ffff; font-size: 3rem; font-weight: bold; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);\\'>${initial}</div>'">`;
+                avatarImg.src = getAvatarUrl(userObj.image_url);
+                avatarImg.style.display = 'block';
+                avatarFallback.style.display = 'none';
             } else {
-                placeholder.innerHTML = `<div class="current-photo" style="display: flex; justify-content: center; align-items: center; background: rgba(0, 255, 255, 0.1); color: #00ffff; font-size: 3rem; font-weight: bold; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);">${initial}</div>`;
+                avatarImg.style.display = 'none';
+                avatarFallback.style.display = 'flex';
             }
 
-            if (localStorage.getItem('theme') !== 'dark') {
+            if (localStorage.getItem('theme') === 'light') {
                 document.body.classList.add('light-mode');
             }
         });
 
-        // Submit Logic
+        // Submit Form with Compression & Progress animation
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const alertBox = document.getElementById('alertBox');
-            const submitBtn = document.getElementById('submitBtn');
             alertBox.replaceChildren();
             
-            const fileInput = document.getElementById('imageInput');
-            const file = fileInput.files[0];
+            const file = imageInput.files[0];
             if (!file) return;
 
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Uploading...';
+            submitBtn.innerHTML = '<span class="btn-spinner"></span> <span>Uploading Photo...</span>';
+            progressWrapper.style.display = 'block';
+            progressFill.style.width = '25%';
+            percentLabel.textContent = '25%';
+            statusLabel.textContent = 'Optimizing photo...';
 
             await configPromise;
 
             try {
+                const compressedFile = await compressImageFile(file);
+
+                progressFill.style.width = '65%';
+                percentLabel.textContent = '65%';
+                statusLabel.textContent = 'Uploading to server...';
+
                 const formData = new FormData();
-                formData.append('image', file);
+                formData.append('image', compressedFile);
 
                 const res = await fetch(`${API_BASE}/api/profile/update/`, {
                     method: 'POST',
@@ -395,6 +606,9 @@
                     body: formData
                 });
 
+                progressFill.style.width = '95%';
+                percentLabel.textContent = '95%';
+
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || 'Failed to upload image');
 
@@ -403,14 +617,21 @@
                 currentUser.image_url = data.user.image_url;
                 setUser(currentUser);
 
-                window.location.href = 'dashboard.html';
+                progressFill.style.width = '100%';
+                percentLabel.textContent = '100%';
+                statusLabel.textContent = 'Complete! Redirecting...';
+
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 300);
             } catch (err) {
                 const alert = document.createElement('div');
                 alert.className = 'alert alert-error';
                 alert.textContent = err instanceof Error ? err.message : 'Failed to upload image. Please try again.';
                 alertBox.replaceChildren(alert);
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Upload Photo';
+                submitBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 20px;">cloud_upload</span> <span>Upload Photo</span>';
+                progressWrapper.style.display = 'none';
             }
         });
 
@@ -418,7 +639,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const body = document.body;
             const toggleBtn = document.getElementById('theme-toggle-btn');
-            const savedTheme = localStorage.getItem('theme') || 'light';
+            const savedTheme = localStorage.getItem('theme') || 'dark';
 
             const loadParticles = (theme) => {
                 let pColor = theme === 'light' ? "#3b82f6" : "#00ffff";
@@ -427,12 +648,12 @@
                 tsParticles.load("tsparticles", {
                     fpsLimit: 60,
                     particles: {
-                        number: { value: 50, density: { enable: true, value_area: 800 } },
+                        number: { value: 45, density: { enable: true, value_area: 800 } },
                         color: { value: pColor },
-                        links: { enable: true, color: lColor, distance: 150, opacity: 0.4, width: 1 },
-                        move: { enable: true, speed: 1.5, direction: "none", random: false, straight: false, outModes: "out" },
-                        size: { value: { min: 1, max: 3 } },
-                        opacity: { value: 0.5 }
+                        links: { enable: true, color: lColor, distance: 150, opacity: 0.35, width: 1 },
+                        move: { enable: true, speed: 1.2, direction: "none", random: false, straight: false, outModes: "out" },
+                        size: { value: { min: 1, max: 2.5 } },
+                        opacity: { value: 0.4 }
                     },
                     interactivity: {
                         events: {
@@ -440,8 +661,8 @@
                             onClick: { enable: true, mode: "push" }
                         },
                         modes: {
-                            grab: { distance: 180, links: { opacity: 0.8 } },
-                            push: { quantity: 4 }
+                            grab: { distance: 160, links: { opacity: 0.6 } },
+                            push: { quantity: 3 }
                         }
                     }
                 });

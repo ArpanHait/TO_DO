@@ -181,14 +181,16 @@ def tasks_view(request):
             "id": task.id,
             "title": task.title,
             "completed": task.completed,
-            "priority": task.priority
+            "priority": task.priority,
+            "created_at": task.created_at,
+            "completed_at": task.completed_at
         }, status=status.HTTP_201_CREATED)
 
 @api_view(["PATCH", "DELETE"])
 @permission_classes([IsAuthenticated])
 def task_detail_view(request, pk):
     try:
-        task = Task.objects.get(pk=pk, user=request.user, is_deleted=False)
+        task = Task.objects.get(pk=pk, user=request.user)
     except Task.DoesNotExist:
         return Response({"error": "Task not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -196,6 +198,7 @@ def task_detail_view(request, pk):
         completed = request.data.get("completed")
         title = request.data.get("title")
         priority = request.data.get("priority")
+        is_deleted = request.data.get("is_deleted")
 
         if completed is not None:
             task.completed = completed
@@ -207,16 +210,21 @@ def task_detail_view(request, pk):
             task.title = title
         if priority is not None:
             task.priority = priority
+        if is_deleted is not None:
+            task.is_deleted = is_deleted
 
         task.save()
         return Response({
             "id": task.id,
             "title": task.title,
             "completed": task.completed,
-            "priority": task.priority
+            "priority": task.priority,
+            "created_at": task.created_at,
+            "completed_at": task.completed_at,
+            "is_deleted": task.is_deleted
         })
 
     elif request.method == "DELETE":
         task.is_deleted = True
         task.save()
-        return Response({"success": "Task deleted successfully."})
+        return Response({"success": "Task deleted successfully.", "id": task.id})

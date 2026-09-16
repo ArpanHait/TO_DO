@@ -23,17 +23,34 @@
         /* transition: all 0.3s ease-in-out; */
     }
     .navbar .brand a {
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        transition: transform 0.3s ease-in-out;
+    }
+    .navbar .brand .brand-logo {
+        width: 34px;
+        height: 34px;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 8px rgba(37, 100, 235, 0.127));
+        border-radius: 6px;
+        display: block;
+        flex-shrink: 0;
+    }
+    .navbar .brand .brand-text {
         background: linear-gradient(130deg, #354a60, #3b82f6);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        text-decoration: none;
         font-size: 1.6rem;
         font-weight: 800;
         letter-spacing: 1px;
         display: inline-block;
-        position: relative;
-        transition: transform 0.3s ease-in-out;
     }
     .navbar .brand a::after {
         content: ">>>DO IT RIGHT NOW! 🫵"; /* Change this to the extra text you want */
@@ -41,6 +58,9 @@
         left: 100%;
         margin-left: 15px;
         white-space: nowrap;
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: 1px;
         color: #d66eff9e; /* Solid lighter purple instead of transparent purple */
         -webkit-text-fill-color: initial;
         opacity: 0; /* Hidden initial state */
@@ -50,6 +70,8 @@
     }
     .navbar .brand a:hover {
         transform: translateY(-2px) scale(1.02);
+    }
+    .navbar .brand a:hover .brand-text {
         background: linear-gradient(135deg, #3b82f6, #8b5cf6);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -275,7 +297,10 @@
 
 <div class="navbar">
     <div class="brand">
-        <a href="{% url 'home' %}">YOU HAVE TO>DO</a>
+        <a href="{% url 'home' %}">
+            <img src="/static/LOGO.png" alt="" class="brand-logo" onerror="this.style.display='none'">
+            <span class="brand-text">YOU HAVE TO>DO</span>
+        </a>
     </div>
 
     <div class="nav-right">
