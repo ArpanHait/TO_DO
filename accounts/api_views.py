@@ -30,19 +30,23 @@ def get_user_data(user):
 @api_view(["GET", "HEAD"])
 @permission_classes([AllowAny])
 def health_check_view(request):
-    db_status = "connected"
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT 1;")
-    except Exception as e:
-        db_status = f"unhealthy: {str(e)}"
-    
-    return Response({
+    data = {
         "status": "online",
         "backend": "Django",
-        "database": db_status,
         "timestamp": timezone.now().isoformat()
-    }, status=status.HTTP_200_OK)
+    }
+    
+    # Only connect to the database if explicitly requested (e.g., /health/?check_db=1)
+    # Default pings (UptimeRobot, health probes) remain completely database-free to allow Neon DB auto-sleep
+    if request.GET.get("check_db") == "1":
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1;")
+            data["database"] = "connected"
+        except Exception as e:
+            data["database"] = f"unhealthy: {str(e)}"
+    
+    return Response(data, status=status.HTTP_200_OK)
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
