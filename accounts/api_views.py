@@ -1,4 +1,4 @@
-from django.db import connection
+from django.db import connection, transaction
 from django.utils import timezone
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -51,29 +51,36 @@ def health_check_view(request):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def register_view(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
+    username = request.data.get("username", "")
+    if isinstance(username, str):
+        username = username.strip()
+    password = request.data.get("password", "")
     image = request.FILES.get("image")
 
     if not username or not password:
         return Response({"error": "Username and password are required."}, status=status.HTTP_400_BAD_REQUEST)
 
+    if User.objects.filter(username__iexact=username).exists():
+        return Response({"error": f"Username '{username}' already exists. Please log in or choose a different name."}, status=status.HTTP_400_BAD_REQUEST)
+
     try:
-        user = User.objects.create_user(username=username, password=password)
-        profile = Profile.objects.create(user=user)
-        if image:
-            profile.image = image
-            profile.save()
-        
-        token, _ = Token.objects.get_or_create(user=user)
+        with transaction.atomic():
+            user = User.objects.create_user(username=username, password=password)
+            profile = Profile.objects.create(user=user)
+            if image:
+                profile.image = image
+                profile.save()
+            
+            token, _ = Token.objects.get_or_create(user=user)
+            
         return Response({
             "token": token.key,
             "user": get_user_data(user)
         }, status=status.HTTP_201_CREATED)
     except IntegrityError:
-        return Response({"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": f"Username '{username}' already exists. Please log in or choose a different name."}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": f"Registration failed: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["POST"])
 @permission_classes([AllowAny])

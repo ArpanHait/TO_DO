@@ -3,6 +3,7 @@ from django.contrib.auth import logout, authenticate, login as auth_login
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from .models import Task, Profile
 import json
 from django.utils import timezone
@@ -10,28 +11,36 @@ from django.db.models import Count
 from django.db.models.functions import TruncDate
 
 def register(request):
-    if request.method=="POST":
-        username = request.POST.get('uname')
-        password = request.POST.get('pwd')
+    if request.method == "POST":
+        username = request.POST.get('uname', '').strip()
+        password = request.POST.get('pwd', '')
         image = request.FILES.get('image')
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, f"Username '{username}' already exists.")
+        if not username or not password:
+            messages.error(request, "Username and password are required.")
+            return redirect('register')
+
+        if User.objects.filter(username__iexact=username).exists():
+            messages.error(request, f"Username '{username}' already exists. Please log in or choose a different name.")
             return redirect('register')
         
-        # Create the new user
-        user = User.objects.create_user(
-            username=username,
-            password=password
-        )
+        try:
+            with transaction.atomic():
+                user = User.objects.create_user(
+                    username=username,
+                    password=password
+                )
+                Profile.objects.create(user=user, image=image)
+        except Exception as e:
+            messages.error(request, f"Registration failed: {str(e)}")
+            return redirect('register')
         
-        # Create the user profile with the uploaded image (if any)
-        Profile.objects.create(user=user, image=image)
-        
-        messages.success(request, "Registration successful! You can now log in.")
-        return redirect('login')
+        # Auto-login the user immediately upon successful registration
+        auth_login(request, user)
+        messages.success(request, f"Welcome, {username}! Your account was created successfully.")
+        return redirect('dashboard')
     
-    return render(request,'register.html')
+    return render(request, 'register.html')
 
 def login(request):
     if request.method == "POST":

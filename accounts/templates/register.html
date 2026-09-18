@@ -234,7 +234,11 @@
 
         if (regForm) {
             regForm.addEventListener('submit', async function(e) {
-                const file = regImageInput.files[0];
+                if (regSubmitBtn.disabled) {
+                    e.preventDefault();
+                    return;
+                }
+                const file = regImageInput && regImageInput.files ? regImageInput.files[0] : null;
                 if (file) {
                     e.preventDefault();
                     regSubmitBtn.disabled = true;
@@ -248,6 +252,9 @@
                     } catch (err) {
                         regForm.submit();
                     }
+                } else {
+                    regSubmitBtn.disabled = true;
+                    regSubmitBtn.value = 'Creating Account...';
                 }
             });
         }
